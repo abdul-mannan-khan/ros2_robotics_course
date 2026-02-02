@@ -31,3 +31,6 @@ Thumbs.db
 .env
 venv/
 week_09/ego-planner-swarm/
+
+# Original lectures (UWL branding)
+week_*/lecture/
