@@ -3,6 +3,7 @@
 **A practical 12-week ROS2 course focused on real-world robotics skills and interview preparation for companies like Amazon Robotics, Google/Waymo, Boston Dynamics, Skydio, and DJI**
 
 **Author:** Dr. Abdul Manan Khan
+
 **ROS2 Distribution:** Jazzy Jalisco (Ubuntu 24.04)
 
 ---
@@ -215,6 +216,7 @@ limitations under the License.
 ## Contact & Support
 
 **Course Author:** Dr. Abdul Manan Khan
+
 **Repository:** [https://github.com/abdul-mannan-khan/robotics-drone-interview-based-course](https://github.com/abdul-mannan-khan/robotics-drone-interview-based-course)
 
 For questions, issues, or discussions:
