@@ -97,9 +97,12 @@ class StereoDepthEstimatorNode(Node):
         depth_msg.header = left_msg.header
         self.depth_pub.publish(depth_msg)
 
-        self.get_logger().info(
-            f"Disparity: [{disparity[valid].min():.1f}, {disparity[valid].max():.1f}], "
-            f"Depth: [{depth[valid].min():.1f}m, {depth[valid].max():.1f}m]")
+        if valid.any():
+            self.get_logger().info(
+                f"Disparity: [{disparity[valid].min():.1f}, {disparity[valid].max():.1f}], "
+                f"Depth: [{depth[valid].min():.1f}m, {depth[valid].max():.1f}m]")
+        else:
+            self.get_logger().info("No valid disparities in this frame")
 
 
 def main(args=None):

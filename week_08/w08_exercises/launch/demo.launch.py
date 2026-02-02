@@ -9,7 +9,7 @@ from launch_ros.actions import Node
 def generate_launch_description():
     # Use source directory (not installed) so bag data is found
     src_dir = os.path.join(
-        os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__)))),
+        os.path.dirname(os.path.dirname(os.path.dirname(os.path.realpath(__file__)))),
     )
     bag_dir = os.path.join(src_dir, 'w08_exercises', 'bag_data', 'synthetic_3d_env')
     config = os.path.join(src_dir, 'w08_exercises', 'config', 'params.yaml')
