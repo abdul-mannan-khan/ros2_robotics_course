@@ -1,0 +1,12 @@
+# Week 1: LiDAR Processing Parameters
+voxel_grid_filter_node:
+  ros__parameters:
+    voxel_size: 0.3
+
+ground_removal_clustering_node:
+  ros__parameters:
+    distance_threshold: 0.2
+    max_iterations: 100
+    cluster_tolerance: 0.5
+    min_cluster_size: 10
+    max_cluster_size: 5000

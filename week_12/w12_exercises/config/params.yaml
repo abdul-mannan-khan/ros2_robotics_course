@@ -1,0 +1,23 @@
+# Week 12: Capstone Integration Parameters
+multi_sensor_fusion_node:
+  ros__parameters:
+    camera_lidar_extrinsics: [1.0,0.0,0.0,0.0, 0.0,1.0,0.0,0.0, 0.0,0.0,1.0,0.0, 0.0,0.0,0.0,1.0]
+    fusion_mode: "overlay"
+    fx: 500.0
+    fy: 500.0
+    cx: 320.0
+    cy: 240.0
+
+mission_planner_node:
+  ros__parameters:
+    mission_waypoints: [5.0,0.0,2.0, 0.0,5.0,2.0, -5.0,0.0,2.0, 0.0,-5.0,2.0]
+    mission_type: "survey"
+    waypoint_threshold: 0.5
+    hover_altitude: 2.0
+    hover_time: 3.0
+
+system_monitor_node:
+  ros__parameters:
+    expected_rates: ["lidar:10.0", "camera:10.0", "imu:50.0", "odom:50.0"]
+    max_latency: 2.0
+    log_file_path: "/tmp/system_health.log"

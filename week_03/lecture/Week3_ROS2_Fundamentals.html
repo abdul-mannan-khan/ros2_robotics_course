@@ -1,0 +1,1529 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Week 3: ROS2 Fundamentals & Node Architecture - TC70045E</title>
+    <script>
+        MathJax = {
+            tex: { inlineMath: [['\\(', '\\)']], displayMath: [['\\[', '\\]']] },
+            svg: { fontCache: 'global' }
+        };
+    </script>
+    <script src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-svg.js" async></script>
+    <style>
+        @page { size: A4; margin: 2cm; }
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; line-height: 1.6; color: #333; background: #f5f5f5; }
+        .page { width: 21cm; min-height: 29.7cm; padding: 2cm; margin: 20px auto; background: white; box-shadow: 0 0 10px rgba(0,0,0,0.1); page-break-after: always; }
+        .header { background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; padding: 30px; text-align: center; border-radius: 10px; margin-bottom: 30px; }
+        .header h1 { font-size: 2.5em; margin-bottom: 10px; }
+        .header p { font-size: 1.2em; opacity: 0.9; }
+        h2 { color: #667eea; border-bottom: 3px solid #764ba2; padding-bottom: 10px; margin: 30px 0 20px 0; font-size: 1.8em; }
+        h3 { color: #764ba2; margin: 25px 0 15px 0; font-size: 1.4em; }
+        h4 { color: #667eea; margin: 20px 0 10px 0; font-size: 1.2em; }
+        .info-box { background: #e8f4f8; border-left: 5px solid #667eea; padding: 20px; margin: 20px 0; border-radius: 5px; }
+        .warning-box { background: #fff4e6; border-left: 5px solid #ff9800; padding: 20px; margin: 20px 0; border-radius: 5px; }
+        .activity-box { background: #f0f8ff; border: 3px solid #4CAF50; padding: 25px; margin: 30px 0; border-radius: 10px; }
+        .activity-box h3 { color: #4CAF50; margin-top: 0; }
+        .image-container { text-align: center; margin: 30px 0; }
+        .image-container img { max-width: 100%; height: auto; border-radius: 10px; box-shadow: 0 4px 6px rgba(0,0,0,0.1); }
+        .image-caption { font-style: italic; color: #666; margin-top: 10px; font-size: 0.9em; }
+        ul, ol { margin: 15px 0 15px 30px; }
+        li { margin: 8px 0; }
+        .two-column { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; margin: 20px 0; }
+        .two-column > * { min-width: 0; overflow: hidden; }
+        .three-column { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 15px; margin: 20px 0; }
+        .three-column > * { min-width: 0; overflow: hidden; }
+        .checklist { background: #f9f9f9; padding: 20px; border-radius: 8px; margin: 20px 0; }
+        .checklist li { list-style: none; padding: 8px 0; }
+        .checklist li:before { content: "\2713 "; color: #4CAF50; font-weight: bold; margin-right: 10px; }
+        table { width: 100%; border-collapse: collapse; margin: 20px 0; table-layout: fixed; word-wrap: break-word; }
+        th, td { border: 1px solid #ddd; padding: 12px; text-align: left; }
+        th { background: #667eea; color: white; }
+        tr:nth-child(even) { background: #f9f9f9; }
+        .diagram { border: 2px solid #667eea; border-radius: 10px; padding: 20px; margin: 20px 0; background: white; }
+        .flow-step { background: #667eea; color: white; padding: 15px; margin: 10px 0; border-radius: 8px; text-align: center; font-weight: bold; }
+        .arrow { text-align: center; font-size: 2em; color: #764ba2; margin: 5px 0; }
+        .tip { background: #fffbea; border-left: 5px solid #ffd700; padding: 15px; margin: 15px 0; border-radius: 5px; }
+        .tip:before { content: "\1F4A1 TIP: "; font-weight: bold; color: #ff9800; }
+        code { background: #f4f4f4; padding: 2px 6px; border-radius: 3px; font-family: 'Courier New', monospace; }
+        pre { background: #1e1e1e; color: #d4d4d4; padding: 20px; border-radius: 8px; overflow-x: auto; max-width: 100%; white-space: pre-wrap; word-wrap: break-word; margin: 15px 0; font-family: 'Courier New', monospace; font-size: 0.9em; line-height: 1.5; }
+        .example-box { background: #f0fff0; border: 2px dashed #4CAF50; padding: 20px; margin: 20px 0; border-radius: 8px; }
+        .math { padding: 15px; margin: 15px 0; border-radius: 5px; overflow-x: auto; max-width: 100%; }
+        img { max-width: 100%; height: auto; }
+        svg { max-width: 100%; height: auto; }
+        td code { word-break: break-all; }
+        .sensor-card { background: white; border: 2px solid #667eea; border-radius: 10px; padding: 20px; text-align: center; }
+        .sensor-card h4 { color: #667eea; margin-bottom: 10px; }
+    </style>
+</head>
+<body>
+
+<!-- ==================== PAGE 1: TITLE PAGE ==================== -->
+<div class="page">
+    <div class="header" style="padding: 60px 30px; margin-top: 60px;">
+        <h1>ROS2 Fundamentals &amp; Node Architecture</h1>
+        <p>Week 3 - Robotics &amp; Drone Engineering</p>
+        <p style="margin-top: 15px; font-size: 1em;">TC70045E | M.Sc. Programme</p>
+    </div>
+
+    <div class="image-container">
+        <img src="https://images.unsplash.com/photo-1485827404703-89b55fcc595e?w=800&h=400&fit=crop" alt="Robot operating system concept">
+        <p class="image-caption">Modern robotics depends on robust middleware for inter-process communication</p>
+    </div>
+
+    <div style="text-align: center; margin-top: 40px;">
+        <h2 style="border: none; text-align: center;">Course Details</h2>
+        <table style="width: 80%; margin: 20px auto;">
+            <tr><th style="width: 40%;">Field</th><th>Details</th></tr>
+            <tr><td><strong>Module Code</strong></td><td>TC70045E</td></tr>
+            <tr><td><strong>Programme</strong></td><td>M.Sc. Robotics &amp; Drone Engineering</td></tr>
+            <tr><td><strong>Instructor</strong></td><td>Dr. Abdul Manan Khan</td></tr>
+            <tr><td><strong>Institution</strong></td><td>University of West London</td></tr>
+            <tr><td><strong>Week</strong></td><td>3 - ROS2 Fundamentals &amp; Node Architecture</td></tr>
+            <tr><td><strong>Delivery</strong></td><td>Lecture + Hands-on Lab</td></tr>
+        </table>
+    </div>
+
+    <div class="info-box" style="margin-top: 30px;">
+        <strong>Prerequisites:</strong> Basic Python programming, familiarity with Linux terminal, Ubuntu 22.04 with ROS2 Humble installed. Completion of Weeks 1 &amp; 2 material.
+    </div>
+</div>
+
+<!-- ==================== PAGE 2: LEARNING OBJECTIVES ==================== -->
+<div class="page">
+    <h2>Learning Objectives</h2>
+
+    <div class="image-container">
+        <img src="https://images.unsplash.com/photo-1516110833967-0b5716ca1387?w=800&h=300&fit=crop" alt="Learning and technology">
+        <p class="image-caption">Building the foundations for robotic software development</p>
+    </div>
+
+    <p>By the end of this lecture, you will be able to:</p>
+
+    <div class="checklist">
+        <ul>
+            <li>Explain the key architectural differences between ROS1 and ROS2</li>
+            <li>Describe the DDS middleware and its role in ROS2 communication</li>
+            <li>Create and structure ROS2 workspaces and packages using colcon</li>
+            <li>Implement ROS2 nodes using rclpy (Python client library)</li>
+            <li>Build publishers and subscribers using the topic-based communication model</li>
+            <li>Create services for synchronous request/response communication</li>
+            <li>Implement action servers and clients for long-running tasks</li>
+            <li>Configure Quality of Service (QoS) policies for reliable communication</li>
+            <li>Write Python-based launch files to orchestrate multi-node systems</li>
+            <li>Use tf2 for coordinate frame transformations</li>
+            <li>Utilise ROS2 CLI tools for debugging and introspection</li>
+        </ul>
+    </div>
+
+    <h3>Why ROS2 Matters for Robotics</h3>
+
+    <div class="two-column">
+        <div class="info-box">
+            <h4>Industry Adoption</h4>
+            <ul>
+                <li>Used by NASA, Amazon, Bosch, Intel, Samsung</li>
+                <li>Standard framework for autonomous vehicles</li>
+                <li>Powers industrial automation systems</li>
+                <li>Foundation for drone software stacks</li>
+            </ul>
+        </div>
+        <div class="info-box">
+            <h4>Technical Advantages</h4>
+            <ul>
+                <li>Real-time capable architecture</li>
+                <li>Built-in security (DDS Security)</li>
+                <li>Multi-platform support (Linux, Windows, macOS)</li>
+                <li>Production-grade reliability</li>
+            </ul>
+        </div>
+    </div>
+
+    <div class="warning-box">
+        <strong>Important:</strong> This course uses <strong>ROS2 Humble Hawksbill</strong> (LTS release, supported until May 2027) on Ubuntu 22.04. Ensure your environment is correctly configured before the lab session.
+    </div>
+</div>
+
+<!-- ==================== PAGE 3: ROS2 vs ROS1 ==================== -->
+<div class="page">
+    <h2>ROS2 vs ROS1 - Key Differences</h2>
+
+    <p>ROS2 is a complete rewrite of the Robot Operating System, designed to address the limitations of ROS1 for production and safety-critical environments.</p>
+
+    <table>
+        <tr><th>Feature</th><th>ROS1</th><th>ROS2</th></tr>
+        <tr><td><strong>Middleware</strong></td><td>Custom TCP/UDP (TCPROS/UDPROS)</td><td>DDS (Data Distribution Service)</td></tr>
+        <tr><td><strong>Discovery</strong></td><td>Centralised (rosmaster)</td><td>Decentralised (DDS discovery)</td></tr>
+        <tr><td><strong>Real-time</strong></td><td>Not supported</td><td>Supported via DDS RTPS</td></tr>
+        <tr><td><strong>Security</strong></td><td>None built-in</td><td>DDS Security (SROS2)</td></tr>
+        <tr><td><strong>Platform</strong></td><td>Linux only (officially)</td><td>Linux, Windows, macOS</td></tr>
+        <tr><td><strong>Build System</strong></td><td>catkin / catkin_make</td><td>colcon / ament</td></tr>
+        <tr><td><strong>Node Lifecycle</strong></td><td>Not available</td><td>Managed lifecycle nodes</td></tr>
+        <tr><td><strong>QoS</strong></td><td>Basic (reliable only)</td><td>Rich QoS policies</td></tr>
+        <tr><td><strong>Multi-robot</strong></td><td>Difficult (namespaces)</td><td>Native domain separation</td></tr>
+        <tr><td><strong>Python Version</strong></td><td>Python 2 (legacy)</td><td>Python 3</td></tr>
+        <tr><td><strong>Client Libraries</strong></td><td>rospy, roscpp</td><td>rclpy, rclcpp (rcl-based)</td></tr>
+    </table>
+
+    <div class="diagram">
+        <h4 style="text-align:center; margin-bottom: 15px;">Architecture Comparison</h4>
+        <svg viewBox="0 0 800 300" xmlns="http://www.w3.org/2000/svg" style="width:100%; max-height:280px;">
+            <!-- ROS1 side -->
+            <rect x="10" y="10" width="370" height="280" rx="10" fill="#fff0f0" stroke="#cc3333" stroke-width="2"/>
+            <text x="195" y="40" text-anchor="middle" font-weight="bold" font-size="16" fill="#cc3333">ROS1 Architecture</text>
+            <rect x="130" y="55" width="130" height="40" rx="8" fill="#cc3333"/>
+            <text x="195" y="80" text-anchor="middle" fill="white" font-size="13" font-weight="bold">rosmaster</text>
+            <line x1="195" y1="95" x2="90" y2="130" stroke="#cc3333" stroke-width="2" stroke-dasharray="5"/>
+            <line x1="195" y1="95" x2="195" y2="130" stroke="#cc3333" stroke-width="2" stroke-dasharray="5"/>
+            <line x1="195" y1="95" x2="300" y2="130" stroke="#cc3333" stroke-width="2" stroke-dasharray="5"/>
+            <rect x="40" y="130" width="100" height="35" rx="6" fill="#667eea"/>
+            <text x="90" y="152" text-anchor="middle" fill="white" font-size="12">Node A</text>
+            <rect x="145" y="130" width="100" height="35" rx="6" fill="#667eea"/>
+            <text x="195" y="152" text-anchor="middle" fill="white" font-size="12">Node B</text>
+            <rect x="250" y="130" width="100" height="35" rx="6" fill="#667eea"/>
+            <text x="300" y="152" text-anchor="middle" fill="white" font-size="12">Node C</text>
+            <rect x="50" y="190" width="280" height="35" rx="6" fill="#ff9800"/>
+            <text x="190" y="212" text-anchor="middle" fill="white" font-size="12">TCPROS / UDPROS</text>
+            <rect x="50" y="240" width="280" height="35" rx="6" fill="#999"/>
+            <text x="190" y="262" text-anchor="middle" fill="white" font-size="12">Linux OS</text>
+
+            <!-- ROS2 side -->
+            <rect x="420" y="10" width="370" height="280" rx="10" fill="#f0fff0" stroke="#4CAF50" stroke-width="2"/>
+            <text x="605" y="40" text-anchor="middle" font-weight="bold" font-size="16" fill="#4CAF50">ROS2 Architecture</text>
+            <text x="605" y="65" text-anchor="middle" font-size="12" fill="#888">No central master!</text>
+            <rect x="450" y="80" width="100" height="35" rx="6" fill="#667eea"/>
+            <text x="500" y="102" text-anchor="middle" fill="white" font-size="12">Node A</text>
+            <rect x="555" y="80" width="100" height="35" rx="6" fill="#667eea"/>
+            <text x="605" y="102" text-anchor="middle" fill="white" font-size="12">Node B</text>
+            <rect x="660" y="80" width="100" height="35" rx="6" fill="#667eea"/>
+            <text x="710" y="102" text-anchor="middle" fill="white" font-size="12">Node C</text>
+            <!-- bidirectional lines -->
+            <line x1="530" y1="97" x2="555" y2="97" stroke="#4CAF50" stroke-width="2"/>
+            <line x1="655" y1="97" x2="660" y2="97" stroke="#4CAF50" stroke-width="2"/>
+            <rect x="450" y="135" width="310" height="35" rx="6" fill="#764ba2"/>
+            <text x="605" y="157" text-anchor="middle" fill="white" font-size="12">RCL (ROS Client Library)</text>
+            <rect x="450" y="180" width="310" height="35" rx="6" fill="#667eea"/>
+            <text x="605" y="202" text-anchor="middle" fill="white" font-size="12">RMW (ROS Middleware Interface)</text>
+            <rect x="450" y="225" width="310" height="35" rx="6" fill="#ff9800"/>
+            <text x="605" y="247" text-anchor="middle" fill="white" font-size="12">DDS (e.g., Fast-DDS, Cyclone DDS)</text>
+            <rect x="450" y="255" width="310" height="25" rx="6" fill="#999"/>
+            <text x="605" y="273" text-anchor="middle" fill="white" font-size="11">Linux / Windows / macOS</text>
+        </svg>
+    </div>
+
+    <div class="tip">
+        ROS2 eliminates the single point of failure (rosmaster) by using DDS peer-to-peer discovery. This makes multi-robot systems and distributed deployments significantly more robust.
+    </div>
+</div>
+
+<!-- ==================== PAGE 4: DDS ARCHITECTURE ==================== -->
+<div class="page">
+    <h2>ROS2 Architecture - DDS Middleware</h2>
+
+    <p>At the heart of ROS2 lies the <strong>Data Distribution Service (DDS)</strong>, an OMG standard for real-time publish/subscribe communication. ROS2 abstracts DDS through the <strong>RMW (ROS Middleware)</strong> layer, allowing users to swap DDS implementations.</p>
+
+    <div class="image-container">
+        <img src="https://images.unsplash.com/photo-1558494949-ef010cbdcc31?w=800&h=300&fit=crop" alt="Network architecture">
+        <p class="image-caption">DDS provides industrial-grade networking for robotic systems</p>
+    </div>
+
+    <div class="diagram">
+        <h4 style="text-align:center; margin-bottom: 10px;">ROS2 Layered Architecture</h4>
+        <svg viewBox="0 0 700 360" xmlns="http://www.w3.org/2000/svg" style="width:100%; max-height:340px;">
+            <!-- Application layer -->
+            <rect x="50" y="10" width="600" height="50" rx="8" fill="#4CAF50"/>
+            <text x="350" y="40" text-anchor="middle" fill="white" font-size="15" font-weight="bold">User Application (Your Nodes)</text>
+
+            <text x="350" y="75" text-anchor="middle" fill="#764ba2" font-size="20">&#8595;</text>
+
+            <!-- Client libraries -->
+            <rect x="50" y="85" width="290" height="45" rx="8" fill="#667eea"/>
+            <text x="195" y="113" text-anchor="middle" fill="white" font-size="14" font-weight="bold">rclpy (Python)</text>
+            <rect x="360" y="85" width="290" height="45" rx="8" fill="#667eea"/>
+            <text x="505" y="113" text-anchor="middle" fill="white" font-size="14" font-weight="bold">rclcpp (C++)</text>
+
+            <text x="350" y="148" text-anchor="middle" fill="#764ba2" font-size="20">&#8595;</text>
+
+            <!-- RCL -->
+            <rect x="50" y="155" width="600" height="45" rx="8" fill="#764ba2"/>
+            <text x="350" y="183" text-anchor="middle" fill="white" font-size="14" font-weight="bold">rcl - ROS Client Library (C)</text>
+
+            <text x="350" y="218" text-anchor="middle" fill="#764ba2" font-size="20">&#8595;</text>
+
+            <!-- RMW -->
+            <rect x="50" y="225" width="600" height="45" rx="8" fill="#ff9800"/>
+            <text x="350" y="253" text-anchor="middle" fill="white" font-size="14" font-weight="bold">RMW - ROS Middleware Interface</text>
+
+            <text x="350" y="288" text-anchor="middle" fill="#764ba2" font-size="20">&#8595;</text>
+
+            <!-- DDS implementations -->
+            <rect x="50" y="295" width="190" height="45" rx="8" fill="#e91e63"/>
+            <text x="145" y="322" text-anchor="middle" fill="white" font-size="12" font-weight="bold">Fast-DDS (eProsima)</text>
+            <rect x="255" y="295" width="190" height="45" rx="8" fill="#e91e63"/>
+            <text x="350" y="322" text-anchor="middle" fill="white" font-size="12" font-weight="bold">Cyclone DDS (Eclipse)</text>
+            <rect x="460" y="295" width="190" height="45" rx="8" fill="#e91e63"/>
+            <text x="555" y="322" text-anchor="middle" fill="white" font-size="12" font-weight="bold">Connext DDS (RTI)</text>
+        </svg>
+    </div>
+
+    <h3>DDS Discovery Protocol</h3>
+
+    <p>DDS uses the <strong>Simple Discovery Protocol (SDP)</strong> for automatic peer discovery over the network, consisting of two phases:</p>
+
+    <div class="two-column">
+        <div class="info-box">
+            <h4>Phase 1: Participant Discovery (PDP)</h4>
+            <p>DDS participants announce themselves using multicast. Each participant broadcasts its presence and capabilities on the network.</p>
+        </div>
+        <div class="info-box">
+            <h4>Phase 2: Endpoint Discovery (EDP)</h4>
+            <p>Once participants are aware of each other, they exchange information about their publishers/subscribers to establish matched connections.</p>
+        </div>
+    </div>
+
+    <div class="info-box">
+        <strong>ROS_DOMAIN_ID:</strong> ROS2 uses domain IDs (0-232) to isolate communication groups. Nodes on the same domain can discover each other. Set via: <code>export ROS_DOMAIN_ID=42</code>. This is essential for multi-robot setups in shared networks.
+    </div>
+
+    <div class="tip">
+        In ROS2 Humble, <strong>Cyclone DDS</strong> is the default middleware. You can switch implementations via <code>export RMW_IMPLEMENTATION=rmw_fastrtps_cpp</code>.
+    </div>
+</div>
+
+<!-- ==================== PAGE 5: WORKSPACE & PACKAGES ==================== -->
+<div class="page">
+    <h2>ROS2 Workspace &amp; Package Structure</h2>
+
+    <p>ROS2 uses <strong>colcon</strong> as its build tool and <strong>ament</strong> as the build system. Understanding workspace structure is fundamental to ROS2 development.</p>
+
+    <div class="image-container">
+        <img src="https://images.unsplash.com/photo-1555066931-4365d14bab8c?w=800&h=300&fit=crop" alt="Code structure">
+        <p class="image-caption">Well-organised workspace structure is key to maintainable robotics software</p>
+    </div>
+
+    <div class="diagram">
+        <h4 style="text-align:center; margin-bottom:10px;">ROS2 Workspace Directory Tree</h4>
+        <svg viewBox="0 0 700 380" xmlns="http://www.w3.org/2000/svg" style="width:100%; max-height:360px;">
+            <style>
+                .tree-text { font-family: 'Courier New', monospace; font-size: 13px; fill: #333; }
+                .tree-dir { font-family: 'Courier New', monospace; font-size: 13px; fill: #667eea; font-weight: bold; }
+                .tree-file { font-family: 'Courier New', monospace; font-size: 13px; fill: #764ba2; }
+                .tree-comment { font-family: 'Courier New', monospace; font-size: 11px; fill: #999; }
+            </style>
+            <text x="30" y="25" class="tree-dir">ros2_ws/</text>
+            <text x="500" y="25" class="tree-comment"># Workspace root</text>
+            <text x="60" y="50" class="tree-text">&#9500;&#9472;&#9472;</text><text x="100" y="50" class="tree-dir">build/</text>
+            <text x="500" y="50" class="tree-comment"># Build artifacts (auto-generated)</text>
+            <text x="60" y="75" class="tree-text">&#9500;&#9472;&#9472;</text><text x="100" y="75" class="tree-dir">install/</text>
+            <text x="500" y="75" class="tree-comment"># Installed packages (auto-generated)</text>
+            <text x="60" y="100" class="tree-text">&#9500;&#9472;&#9472;</text><text x="100" y="100" class="tree-dir">log/</text>
+            <text x="500" y="100" class="tree-comment"># Build logs</text>
+            <text x="60" y="125" class="tree-text">&#9492;&#9472;&#9472;</text><text x="100" y="125" class="tree-dir">src/</text>
+            <text x="500" y="125" class="tree-comment"># Source packages (your code)</text>
+            <text x="130" y="155" class="tree-text">&#9492;&#9472;&#9472;</text><text x="170" y="155" class="tree-dir">my_robot_pkg/</text>
+            <text x="500" y="155" class="tree-comment"># A Python package</text>
+            <text x="200" y="180" class="tree-text">&#9500;&#9472;&#9472;</text><text x="240" y="180" class="tree-file">package.xml</text>
+            <text x="500" y="180" class="tree-comment"># Package manifest</text>
+            <text x="200" y="205" class="tree-text">&#9500;&#9472;&#9472;</text><text x="240" y="205" class="tree-file">setup.py</text>
+            <text x="500" y="205" class="tree-comment"># Python setup (ament_python)</text>
+            <text x="200" y="230" class="tree-text">&#9500;&#9472;&#9472;</text><text x="240" y="230" class="tree-file">setup.cfg</text>
+            <text x="500" y="230" class="tree-comment"># Install directories</text>
+            <text x="200" y="255" class="tree-text">&#9500;&#9472;&#9472;</text><text x="240" y="255" class="tree-dir">resource/</text>
+            <text x="500" y="255" class="tree-comment"># Package marker</text>
+            <text x="200" y="280" class="tree-text">&#9500;&#9472;&#9472;</text><text x="240" y="280" class="tree-dir">my_robot_pkg/</text>
+            <text x="500" y="280" class="tree-comment"># Python module</text>
+            <text x="270" y="305" class="tree-text">&#9500;&#9472;&#9472;</text><text x="310" y="305" class="tree-file">__init__.py</text>
+            <text x="270" y="330" class="tree-text">&#9500;&#9472;&#9472;</text><text x="310" y="330" class="tree-file">my_node.py</text>
+            <text x="270" y="355" class="tree-text">&#9492;&#9472;&#9472;</text><text x="310" y="355" class="tree-file">my_subscriber.py</text>
+            <text x="200" y="380" class="tree-text">&#9492;&#9472;&#9472;</text><text x="240" y="380" class="tree-dir">launch/</text>
+            <text x="500" y="380" class="tree-comment"># Launch files</text>
+        </svg>
+    </div>
+
+    <h3>Creating a Workspace &amp; Package</h3>
+    <pre>
+# Create workspace
+mkdir -p ~/ros2_ws/src
+cd ~/ros2_ws/src
+
+# Create a Python package
+ros2 pkg create --build-type ament_python my_robot_pkg \
+    --dependencies rclpy std_msgs geometry_msgs
+
+# Build the workspace
+cd ~/ros2_ws
+colcon build --symlink-install
+
+# Source the workspace
+source install/setup.bash
+    </pre>
+
+    <div class="tip">
+        Use <code>--symlink-install</code> with colcon to create symbolic links instead of copying files. This means Python changes take effect immediately without rebuilding.
+    </div>
+
+    <div class="warning-box">
+        <strong>Common Mistake:</strong> Forgetting to source the workspace after building. Always run <code>source install/setup.bash</code> in every new terminal, or add it to your <code>~/.bashrc</code>.
+    </div>
+</div>
+
+<!-- ==================== PAGE 6: NODES ==================== -->
+<div class="page">
+    <h2>Nodes - The Computational Units</h2>
+
+    <p>A <strong>node</strong> is the fundamental building block in ROS2. Each node is a single-purpose process that communicates with other nodes via topics, services, and actions.</p>
+
+    <div class="image-container">
+        <img src="https://images.unsplash.com/photo-1518770660439-4636190af475?w=800&h=300&fit=crop" alt="Computing hardware">
+        <p class="image-caption">Each node handles a specific computational task in the robotic system</p>
+    </div>
+
+    <div class="diagram">
+        <h4 style="text-align:center; margin-bottom:10px;">Node Communication in a Robotic System</h4>
+        <svg viewBox="0 0 700 200" xmlns="http://www.w3.org/2000/svg" style="width:100%; max-height:200px;">
+            <rect x="10" y="70" width="120" height="60" rx="10" fill="#667eea"/>
+            <text x="70" y="95" text-anchor="middle" fill="white" font-size="11" font-weight="bold">Camera</text>
+            <text x="70" y="115" text-anchor="middle" fill="white" font-size="11">Driver Node</text>
+
+            <rect x="170" y="70" width="120" height="60" rx="10" fill="#764ba2"/>
+            <text x="230" y="95" text-anchor="middle" fill="white" font-size="11" font-weight="bold">Perception</text>
+            <text x="230" y="115" text-anchor="middle" fill="white" font-size="11">Node</text>
+
+            <rect x="330" y="70" width="120" height="60" rx="10" fill="#4CAF50"/>
+            <text x="390" y="95" text-anchor="middle" fill="white" font-size="11" font-weight="bold">Planning</text>
+            <text x="390" y="115" text-anchor="middle" fill="white" font-size="11">Node</text>
+
+            <rect x="490" y="70" width="120" height="60" rx="10" fill="#ff9800"/>
+            <text x="550" y="95" text-anchor="middle" fill="white" font-size="11" font-weight="bold">Motor</text>
+            <text x="550" y="115" text-anchor="middle" fill="white" font-size="11">Controller Node</text>
+
+            <!-- Arrows -->
+            <line x1="130" y1="100" x2="170" y2="100" stroke="#333" stroke-width="2" marker-end="url(#arrowhead)"/>
+            <line x1="290" y1="100" x2="330" y2="100" stroke="#333" stroke-width="2" marker-end="url(#arrowhead)"/>
+            <line x1="450" y1="100" x2="490" y2="100" stroke="#333" stroke-width="2" marker-end="url(#arrowhead)"/>
+
+            <text x="150" y="60" text-anchor="middle" fill="#666" font-size="10">/image_raw</text>
+            <text x="310" y="60" text-anchor="middle" fill="#666" font-size="10">/objects</text>
+            <text x="470" y="60" text-anchor="middle" fill="#666" font-size="10">/cmd_vel</text>
+
+            <defs>
+                <marker id="arrowhead" markerWidth="10" markerHeight="7" refX="10" refY="3.5" orient="auto">
+                    <polygon points="0 0, 10 3.5, 0 7" fill="#333"/>
+                </marker>
+            </defs>
+        </svg>
+    </div>
+
+    <h3>Creating a Basic Node with rclpy</h3>
+
+    <pre>
+import rclpy
+from rclpy.node import Node
+
+
+class MyRobotNode(Node):
+    """A minimal ROS2 node example."""
+
+    def __init__(self):
+        super().__init__('my_robot_node')  # Node name
+        self.get_logger().info('Robot node has been started!')
+
+        # Create a timer that fires every 1 second
+        self.timer = self.create_timer(1.0, self.timer_callback)
+        self.counter = 0
+
+    def timer_callback(self):
+        self.counter += 1
+        self.get_logger().info(f'Timer fired: count={self.counter}')
+
+
+def main(args=None):
+    rclpy.init(args=args)
+    node = MyRobotNode()
+    rclpy.spin(node)       # Keep node alive
+    node.destroy_node()
+    rclpy.shutdown()
+
+
+if __name__ == '__main__':
+    main()
+    </pre>
+
+    <h3>Node Lifecycle (Managed Nodes)</h3>
+    <p>ROS2 introduces <strong>lifecycle nodes</strong> with deterministic state transitions:</p>
+    <div class="flow-step">Unconfigured</div>
+    <div class="arrow">&darr;</div>
+    <div class="flow-step">Inactive (configured but not running)</div>
+    <div class="arrow">&darr;</div>
+    <div class="flow-step">Active (fully operational)</div>
+    <div class="arrow">&darr;</div>
+    <div class="flow-step">Finalized (shut down)</div>
+
+    <div class="info-box">
+        <strong>When to use lifecycle nodes:</strong> Sensor drivers, hardware interfaces, and any node that requires a deterministic startup/shutdown sequence.
+    </div>
+</div>
+
+<!-- ==================== PAGE 7: TOPICS & MESSAGES ==================== -->
+<div class="page">
+    <h2>Topics &amp; Messages</h2>
+
+    <p>Topics are named buses over which nodes exchange <strong>messages</strong>. The communication follows a <strong>publish/subscribe</strong> pattern -- publishers and subscribers are decoupled and unaware of each other.</p>
+
+    <div class="image-container">
+        <img src="https://images.unsplash.com/photo-1544197150-b99a580bb7a8?w=800&h=250&fit=crop" alt="Network connections">
+        <p class="image-caption">Topics enable many-to-many communication between nodes</p>
+    </div>
+
+    <div class="diagram">
+        <h4 style="text-align:center; margin-bottom:10px;">Publish/Subscribe Pattern</h4>
+        <svg viewBox="0 0 700 220" xmlns="http://www.w3.org/2000/svg" style="width:100%; max-height:220px;">
+            <!-- Publishers -->
+            <rect x="20" y="20" width="140" height="50" rx="8" fill="#667eea"/>
+            <text x="90" y="50" text-anchor="middle" fill="white" font-size="12" font-weight="bold">Publisher A</text>
+            <rect x="20" y="90" width="140" height="50" rx="8" fill="#667eea"/>
+            <text x="90" y="120" text-anchor="middle" fill="white" font-size="12" font-weight="bold">Publisher B</text>
+
+            <!-- Topic -->
+            <rect x="250" y="40" width="200" height="70" rx="35" fill="#ff9800"/>
+            <text x="350" y="70" text-anchor="middle" fill="white" font-size="14" font-weight="bold">/sensor_data</text>
+            <text x="350" y="90" text-anchor="middle" fill="white" font-size="11">Topic</text>
+
+            <!-- Subscribers -->
+            <rect x="540" y="10" width="140" height="45" rx="8" fill="#4CAF50"/>
+            <text x="610" y="37" text-anchor="middle" fill="white" font-size="12" font-weight="bold">Subscriber 1</text>
+            <rect x="540" y="65" width="140" height="45" rx="8" fill="#4CAF50"/>
+            <text x="610" y="92" text-anchor="middle" fill="white" font-size="12" font-weight="bold">Subscriber 2</text>
+            <rect x="540" y="120" width="140" height="45" rx="8" fill="#4CAF50"/>
+            <text x="610" y="147" text-anchor="middle" fill="white" font-size="12" font-weight="bold">Subscriber 3</text>
+
+            <!-- Arrows -->
+            <line x1="160" y1="45" x2="250" y2="65" stroke="#333" stroke-width="2" marker-end="url(#arrowhead)"/>
+            <line x1="160" y1="115" x2="250" y2="85" stroke="#333" stroke-width="2" marker-end="url(#arrowhead)"/>
+            <line x1="450" y1="62" x2="540" y2="32" stroke="#333" stroke-width="2" marker-end="url(#arrowhead)"/>
+            <line x1="450" y1="75" x2="540" y2="87" stroke="#333" stroke-width="2" marker-end="url(#arrowhead)"/>
+            <line x1="450" y1="88" x2="540" y2="142" stroke="#333" stroke-width="2" marker-end="url(#arrowhead)"/>
+
+            <text x="350" y="200" text-anchor="middle" fill="#666" font-size="12">Many-to-many: multiple publishers and subscribers per topic</text>
+        </svg>
+    </div>
+
+    <h3>Common Message Types</h3>
+
+    <table>
+        <tr><th>Package</th><th>Message Type</th><th>Description</th><th>Fields</th></tr>
+        <tr><td><code>std_msgs</code></td><td>String, Int32, Float64, Bool</td><td>Basic data types</td><td><code>data</code></td></tr>
+        <tr><td><code>geometry_msgs</code></td><td>Twist</td><td>Velocity command</td><td><code>linear.x/y/z, angular.x/y/z</code></td></tr>
+        <tr><td><code>geometry_msgs</code></td><td>Pose, PoseStamped</td><td>Position + orientation</td><td><code>position, orientation</code></td></tr>
+        <tr><td><code>sensor_msgs</code></td><td>LaserScan</td><td>LIDAR data</td><td><code>ranges[], angle_min/max</code></td></tr>
+        <tr><td><code>sensor_msgs</code></td><td>Image</td><td>Camera image</td><td><code>data, width, height, encoding</code></td></tr>
+        <tr><td><code>sensor_msgs</code></td><td>Imu</td><td>IMU data</td><td><code>orientation, angular_velocity, linear_acceleration</code></td></tr>
+        <tr><td><code>nav_msgs</code></td><td>Odometry</td><td>Position estimate</td><td><code>pose, twist</code></td></tr>
+        <tr><td><code>nav_msgs</code></td><td>OccupancyGrid</td><td>Map data</td><td><code>data[], info (resolution, width, height)</code></td></tr>
+    </table>
+
+    <div class="tip">
+        Use <code>ros2 interface show geometry_msgs/msg/Twist</code> to inspect any message type's structure from the terminal.
+    </div>
+</div>
+
+<!-- ==================== PAGE 8: PUBLISHERS ==================== -->
+<div class="page">
+    <h2>Publishers - Sending Data</h2>
+
+    <p>Publishers send messages to topics at a specified rate. Here is a complete example of a velocity command publisher for a mobile robot.</p>
+
+    <div class="image-container">
+        <img src="https://images.unsplash.com/photo-1561557944-6e7860d1a7eb?w=800&h=250&fit=crop" alt="Robot movement">
+        <p class="image-caption">Publishers drive robot behaviour by sending commands and sensor data</p>
+    </div>
+
+    <h3>Complete Publisher Example</h3>
+
+    <pre>
+import rclpy
+from rclpy.node import Node
+from geometry_msgs.msg import Twist
+from rclpy.qos import QoSProfile, ReliabilityPolicy
+
+
+class VelocityPublisher(Node):
+    def __init__(self):
+        super().__init__('velocity_publisher')
+
+        # Declare parameters with defaults
+        self.declare_parameter('linear_speed', 0.5)
+        self.declare_parameter('angular_speed', 0.0)
+        self.declare_parameter('publish_rate', 10.0)
+
+        # QoS profile for reliable delivery
+        qos = QoSProfile(depth=10)
+        qos.reliability = ReliabilityPolicy.RELIABLE
+
+        # Create publisher
+        self.publisher = self.create_publisher(
+            Twist,         # Message type
+            '/cmd_vel',    # Topic name
+            qos            # QoS profile
+        )
+
+        # Timer callback at specified rate
+        rate = self.get_parameter('publish_rate').value
+        self.timer = self.create_timer(1.0 / rate, self.publish_velocity)
+        self.get_logger().info('Velocity publisher started')
+
+    def publish_velocity(self):
+        msg = Twist()
+        msg.linear.x = self.get_parameter('linear_speed').value
+        msg.angular.z = self.get_parameter('angular_speed').value
+        self.publisher.publish(msg)
+        self.get_logger().debug(
+            f'Published: linear={msg.linear.x}, angular={msg.angular.z}'
+        )
+
+
+def main(args=None):
+    rclpy.init(args=args)
+    node = VelocityPublisher()
+    rclpy.spin(node)
+    node.destroy_node()
+    rclpy.shutdown()
+    </pre>
+
+    <h3>Running the Publisher</h3>
+    <pre>
+# Run directly
+ros2 run my_robot_pkg velocity_publisher
+
+# Override parameters at runtime
+ros2 run my_robot_pkg velocity_publisher \
+    --ros-args -p linear_speed:=1.0 -p angular_speed:=0.5
+    </pre>
+
+    <div class="activity-box">
+        <h3>Activity 1: Create a Sensor Publisher</h3>
+        <p><strong>Task:</strong> Create a publisher node that simulates a temperature sensor.</p>
+        <ol>
+            <li>Create a new node called <code>temperature_publisher</code></li>
+            <li>Publish <code>sensor_msgs/msg/Temperature</code> to the topic <code>/temperature</code></li>
+            <li>Generate random temperature values between 20.0 and 30.0 degrees Celsius</li>
+            <li>Publish at 1 Hz with a variance of 0.5</li>
+            <li>Include a <code>header.stamp</code> with the current time using <code>self.get_clock().now().to_msg()</code></li>
+        </ol>
+        <p><strong>Expected output:</strong> Verify with <code>ros2 topic echo /temperature</code></p>
+    </div>
+
+    <div class="warning-box">
+        <strong>Thread Safety:</strong> Publishers are not thread-safe by default. If publishing from multiple threads, use a <code>MutuallyExclusiveCallbackGroup</code> or protect with a lock.
+    </div>
+</div>
+
+<!-- ==================== PAGE 9: SUBSCRIBERS ==================== -->
+<div class="page">
+    <h2>Subscribers - Receiving Data</h2>
+
+    <p>Subscribers register interest in a topic and receive messages asynchronously via callback functions. The callback is invoked each time a new message arrives.</p>
+
+    <div class="image-container">
+        <img src="https://images.unsplash.com/photo-1526374965328-7f61d4dc18c5?w=800&h=250&fit=crop" alt="Data processing">
+        <p class="image-caption">Subscribers process incoming data streams from sensors and other nodes</p>
+    </div>
+
+    <h3>Complete Subscriber Example</h3>
+
+    <pre>
+import rclpy
+from rclpy.node import Node
+from sensor_msgs.msg import LaserScan
+from rclpy.qos import QoSProfile, ReliabilityPolicy, DurabilityPolicy
+import math
+
+
+class ObstacleDetector(Node):
+    def __init__(self):
+        super().__init__('obstacle_detector')
+
+        # Sensor QoS: best effort for high-frequency sensor data
+        sensor_qos = QoSProfile(
+            depth=5,
+            reliability=ReliabilityPolicy.BEST_EFFORT,
+            durability=DurabilityPolicy.VOLATILE
+        )
+
+        self.subscription = self.create_subscription(
+            LaserScan,              # Message type
+            '/scan',                # Topic name
+            self.scan_callback,     # Callback function
+            sensor_qos              # QoS profile
+        )
+
+        self.declare_parameter('obstacle_threshold', 0.5)  # metres
+
+    def scan_callback(self, msg: LaserScan):
+        """Process laser scan data to detect obstacles."""
+        threshold = self.get_parameter('obstacle_threshold').value
+        min_distance = min(
+            r for r in msg.ranges
+            if not math.isinf(r) and not math.isnan(r)
+        )
+
+        if min_distance < threshold:
+            # Find the angle of the closest obstacle
+            min_idx = msg.ranges.index(min_distance)
+            angle = msg.angle_min + min_idx * msg.angle_increment
+            angle_deg = math.degrees(angle)
+
+            self.get_logger().warn(
+                f'OBSTACLE at {min_distance:.2f}m, '
+                f'angle={angle_deg:.1f} deg'
+            )
+        else:
+            self.get_logger().info(
+                f'Clear: nearest object at {min_distance:.2f}m'
+            )
+
+
+def main(args=None):
+    rclpy.init(args=args)
+    node = ObstacleDetector()
+    rclpy.spin(node)
+    node.destroy_node()
+    rclpy.shutdown()
+    </pre>
+
+    <h3>Key Subscriber Concepts</h3>
+
+    <div class="two-column">
+        <div class="info-box">
+            <h4>Callback Queue</h4>
+            <p>Messages are queued and delivered to callbacks one at a time by the executor. The queue depth is set by the QoS profile.</p>
+        </div>
+        <div class="info-box">
+            <h4>QoS Matching</h4>
+            <p>Publisher and subscriber QoS must be <strong>compatible</strong>. A RELIABLE subscriber cannot connect to a BEST_EFFORT publisher.</p>
+        </div>
+    </div>
+
+    <div class="activity-box">
+        <h3>Activity 2: Build an Obstacle Monitor</h3>
+        <p><strong>Task:</strong> Create a subscriber that processes <code>/cmd_vel</code> messages and logs a warning if the robot speed exceeds a configurable threshold.</p>
+        <ol>
+            <li>Subscribe to <code>/cmd_vel</code> (type: <code>geometry_msgs/msg/Twist</code>)</li>
+            <li>Compute total speed: \( v = \sqrt{v_x^2 + v_y^2} \)</li>
+            <li>Use a parameter <code>max_speed</code> (default 1.0 m/s)</li>
+            <li>Log a warning if speed exceeds the threshold</li>
+            <li>Test by publishing: <code>ros2 topic pub /cmd_vel geometry_msgs/msg/Twist "{linear: {x: 2.0}}"</code></li>
+        </ol>
+    </div>
+</div>
+
+<!-- ==================== PAGE 10: SERVICES ==================== -->
+<div class="page">
+    <h2>Services - Request/Response Pattern</h2>
+
+    <p>Services provide <strong>synchronous</strong> request/response communication. A client sends a request and blocks until it receives a response from the server. Use services for quick computations, configuration queries, and state changes.</p>
+
+    <div class="image-container">
+        <img src="https://images.unsplash.com/photo-1451187580459-43490279c0fa?w=800&h=250&fit=crop" alt="Communication systems">
+        <p class="image-caption">Services provide structured client-server communication</p>
+    </div>
+
+    <div class="diagram">
+        <h4 style="text-align:center; margin-bottom:10px;">Service Communication Pattern</h4>
+        <svg viewBox="0 0 700 160" xmlns="http://www.w3.org/2000/svg" style="width:100%; max-height:160px;">
+            <rect x="50" y="40" width="180" height="70" rx="10" fill="#667eea"/>
+            <text x="140" y="70" text-anchor="middle" fill="white" font-size="14" font-weight="bold">Service Client</text>
+            <text x="140" y="90" text-anchor="middle" fill="white" font-size="11">(sends request)</text>
+
+            <rect x="470" y="40" width="180" height="70" rx="10" fill="#764ba2"/>
+            <text x="560" y="70" text-anchor="middle" fill="white" font-size="14" font-weight="bold">Service Server</text>
+            <text x="560" y="90" text-anchor="middle" fill="white" font-size="11">(sends response)</text>
+
+            <!-- Request arrow -->
+            <line x1="230" y1="60" x2="470" y2="60" stroke="#4CAF50" stroke-width="2.5" marker-end="url(#arrowhead)"/>
+            <text x="350" y="52" text-anchor="middle" fill="#4CAF50" font-weight="bold" font-size="12">Request</text>
+
+            <!-- Response arrow -->
+            <line x1="470" y1="90" x2="230" y2="90" stroke="#ff9800" stroke-width="2.5" marker-end="url(#arrowhead)"/>
+            <text x="350" y="115" text-anchor="middle" fill="#ff9800" font-weight="bold" font-size="12">Response</text>
+
+            <text x="350" y="150" text-anchor="middle" fill="#666" font-size="11">/compute_path (nav_msgs/srv/GetPlan)</text>
+        </svg>
+    </div>
+
+    <h3>Custom Service Definition (.srv file)</h3>
+    <pre>
+# srv/ComputeDistance.srv
+# --- Request ---
+geometry_msgs/Point point_a
+geometry_msgs/Point point_b
+---
+# --- Response ---
+float64 distance
+bool success
+    </pre>
+
+    <h3>Service Server Implementation</h3>
+    <pre>
+import rclpy
+from rclpy.node import Node
+from example_interfaces.srv import AddTwoInts
+
+
+class AdditionServer(Node):
+    def __init__(self):
+        super().__init__('addition_server')
+        self.srv = self.create_service(
+            AddTwoInts,             # Service type
+            'add_two_ints',         # Service name
+            self.add_callback       # Handler
+        )
+        self.get_logger().info('Addition service ready')
+
+    def add_callback(self, request, response):
+        response.sum = request.a + request.b
+        self.get_logger().info(
+            f'Request: {request.a} + {request.b} = {response.sum}'
+        )
+        return response
+
+
+def main(args=None):
+    rclpy.init(args=args)
+    node = AdditionServer()
+    rclpy.spin(node)
+    rclpy.shutdown()
+    </pre>
+
+    <h3>Service Client (Async)</h3>
+    <pre>
+import rclpy
+from rclpy.node import Node
+from example_interfaces.srv import AddTwoInts
+
+
+class AdditionClient(Node):
+    def __init__(self):
+        super().__init__('addition_client')
+        self.client = self.create_client(AddTwoInts, 'add_two_ints')
+        while not self.client.wait_for_service(timeout_sec=1.0):
+            self.get_logger().info('Waiting for service...')
+
+    def send_request(self, a, b):
+        request = AddTwoInts.Request()
+        request.a = a
+        request.b = b
+        future = self.client.call_async(request)
+        return future
+    </pre>
+
+    <div class="warning-box">
+        <strong>Never use synchronous service calls in callbacks!</strong> Calling <code>client.call()</code> inside a callback will deadlock. Always use <code>call_async()</code> and handle the future.
+    </div>
+</div>
+
+<!-- ==================== PAGE 11: ACTIONS ==================== -->
+<div class="page">
+    <h2>Actions - Long-Running Tasks with Feedback</h2>
+
+    <p>Actions combine the features of topics and services. They are designed for <strong>long-running tasks</strong> that provide periodic feedback and can be cancelled. Examples: navigating to a goal, executing a trajectory, scanning an area.</p>
+
+    <div class="image-container">
+        <img src="https://images.unsplash.com/photo-1589254065878-42c014d9991e?w=800&h=250&fit=crop" alt="Robot navigation">
+        <p class="image-caption">Actions are ideal for tasks like autonomous navigation with continuous feedback</p>
+    </div>
+
+    <div class="diagram">
+        <h4 style="text-align:center; margin-bottom:10px;">Action State Machine</h4>
+        <svg viewBox="0 0 700 250" xmlns="http://www.w3.org/2000/svg" style="width:100%; max-height:250px;">
+            <!-- States -->
+            <circle cx="100" cy="80" r="40" fill="#667eea"/>
+            <text x="100" y="85" text-anchor="middle" fill="white" font-size="11" font-weight="bold">IDLE</text>
+
+            <circle cx="280" cy="80" r="40" fill="#ff9800"/>
+            <text x="280" y="85" text-anchor="middle" fill="white" font-size="11" font-weight="bold">ACCEPTED</text>
+
+            <circle cx="460" cy="80" r="40" fill="#4CAF50"/>
+            <text x="460" y="85" text-anchor="middle" fill="white" font-size="11" font-weight="bold">EXECUTING</text>
+
+            <circle cx="640" cy="40" r="35" fill="#2196F3"/>
+            <text x="640" y="45" text-anchor="middle" fill="white" font-size="10" font-weight="bold">SUCCEEDED</text>
+
+            <circle cx="640" cy="130" r="35" fill="#e91e63"/>
+            <text x="640" y="125" text-anchor="middle" fill="white" font-size="10" font-weight="bold">ABORTED/</text>
+            <text x="640" y="140" text-anchor="middle" fill="white" font-size="10" font-weight="bold">CANCELED</text>
+
+            <!-- Transitions -->
+            <line x1="140" y1="80" x2="240" y2="80" stroke="#333" stroke-width="2" marker-end="url(#arrowhead)"/>
+            <text x="190" y="70" text-anchor="middle" font-size="10" fill="#666">goal_request</text>
+
+            <line x1="320" y1="80" x2="420" y2="80" stroke="#333" stroke-width="2" marker-end="url(#arrowhead)"/>
+            <text x="370" y="70" text-anchor="middle" font-size="10" fill="#666">execute</text>
+
+            <line x1="500" y1="65" x2="605" y2="42" stroke="#333" stroke-width="2" marker-end="url(#arrowhead)"/>
+            <text x="555" y="40" text-anchor="middle" font-size="10" fill="#666">success</text>
+
+            <line x1="500" y1="95" x2="605" y2="125" stroke="#333" stroke-width="2" marker-end="url(#arrowhead)"/>
+            <text x="555" y="125" text-anchor="middle" font-size="10" fill="#666">abort/cancel</text>
+
+            <!-- Feedback loop -->
+            <path d="M 460 120 Q 460 180 460 120" fill="none" stroke="#4CAF50" stroke-width="2"/>
+            <ellipse cx="460" cy="160" rx="50" ry="20" fill="none" stroke="#4CAF50" stroke-width="2" stroke-dasharray="4"/>
+            <text x="460" y="165" text-anchor="middle" font-size="10" fill="#4CAF50" font-weight="bold">feedback</text>
+            <line x1="460" y1="140" x2="460" y2="120" stroke="#4CAF50" stroke-width="2" marker-end="url(#arrowhead)"/>
+        </svg>
+    </div>
+
+    <h3>Action Definition (.action file)</h3>
+    <pre>
+# action/Navigate.action
+# --- Goal ---
+geometry_msgs/PoseStamped target_pose
+---
+# --- Result ---
+bool success
+float64 total_distance
+float64 elapsed_time
+---
+# --- Feedback ---
+geometry_msgs/PoseStamped current_pose
+float64 distance_remaining
+float64 estimated_time_remaining
+    </pre>
+
+    <h3>Action Server (Simplified)</h3>
+    <pre>
+from rclpy.action import ActionServer
+from nav2_msgs.action import NavigateToPose
+
+class NavigationServer(Node):
+    def __init__(self):
+        super().__init__('nav_server')
+        self._action_server = ActionServer(
+            self, NavigateToPose, 'navigate_to_pose',
+            execute_callback=self.execute_callback
+        )
+
+    async def execute_callback(self, goal_handle):
+        self.get_logger().info('Executing navigation...')
+        feedback = NavigateToPose.Feedback()
+
+        for i in range(100):
+            feedback.distance_remaining = 10.0 - (i * 0.1)
+            goal_handle.publish_feedback(feedback)
+            await asyncio.sleep(0.1)
+
+            if goal_handle.is_cancel_requested:
+                goal_handle.canceled()
+                return NavigateToPose.Result()
+
+        goal_handle.succeed()
+        result = NavigateToPose.Result()
+        return result
+    </pre>
+
+    <div class="info-box">
+        <strong>Topics vs Services vs Actions:</strong> Use <strong>topics</strong> for continuous data streams, <strong>services</strong> for quick request/reply, and <strong>actions</strong> for tasks that take time and need feedback or cancellation.
+    </div>
+</div>
+
+<!-- ==================== PAGE 12: PARAMETERS ==================== -->
+<div class="page">
+    <h2>Parameters - Dynamic Reconfiguration</h2>
+
+    <p>ROS2 parameters allow you to configure nodes at runtime without recompiling. Each node manages its own parameters, and they can be set from launch files, the command line, or YAML files.</p>
+
+    <div class="image-container">
+        <img src="https://images.unsplash.com/photo-1504868584819-f8e8b4b6d7e3?w=800&h=250&fit=crop" alt="Configuration and settings">
+        <p class="image-caption">Parameters enable flexible, runtime-configurable robotic systems</p>
+    </div>
+
+    <h3>Parameter Types</h3>
+    <div class="three-column">
+        <div class="sensor-card">
+            <h4>Scalar</h4>
+            <p><code>bool</code>, <code>int</code>, <code>double</code>, <code>string</code></p>
+        </div>
+        <div class="sensor-card">
+            <h4>Array</h4>
+            <p><code>bool[]</code>, <code>int[]</code>, <code>double[]</code>, <code>string[]</code></p>
+        </div>
+        <div class="sensor-card">
+            <h4>Byte Array</h4>
+            <p><code>byte[]</code> for raw binary data</p>
+        </div>
+    </div>
+
+    <h3>Complete Parameter Example with Callbacks</h3>
+    <pre>
+import rclpy
+from rclpy.node import Node
+from rcl_interfaces.msg import SetParametersResult
+
+
+class ConfigurableNode(Node):
+    def __init__(self):
+        super().__init__('configurable_node')
+
+        # Declare parameters with descriptors
+        self.declare_parameter('max_speed', 1.0)
+        self.declare_parameter('robot_name', 'my_robot')
+        self.declare_parameter('enabled_sensors', ['lidar', 'camera'])
+        self.declare_parameter('use_sim_time', False)
+
+        # Register a callback for parameter changes
+        self.add_on_set_parameters_callback(self.param_callback)
+
+        self.get_logger().info(
+            f"Robot: {self.get_parameter('robot_name').value}, "
+            f"Max speed: {self.get_parameter('max_speed').value}"
+        )
+
+    def param_callback(self, params):
+        """Called whenever parameters are changed."""
+        for param in params:
+            self.get_logger().info(
+                f'Parameter "{param.name}" changed to: {param.value}'
+            )
+            if param.name == 'max_speed' and param.value > 5.0:
+                return SetParametersResult(
+                    successful=False,
+                    reason='max_speed cannot exceed 5.0 m/s'
+                )
+        return SetParametersResult(successful=True)
+    </pre>
+
+    <h3>Setting Parameters</h3>
+    <pre>
+# From command line at launch
+ros2 run my_pkg my_node --ros-args -p max_speed:=2.0
+
+# Changing at runtime
+ros2 param set /configurable_node max_speed 3.0
+
+# Loading from YAML file
+ros2 run my_pkg my_node --ros-args --params-file config.yaml
+    </pre>
+
+    <h4>Parameter YAML File</h4>
+    <pre>
+# config/params.yaml
+configurable_node:
+  ros__parameters:
+    max_speed: 2.5
+    robot_name: "atlas"
+    enabled_sensors: ["lidar", "camera", "imu"]
+    use_sim_time: true
+    </pre>
+
+    <div class="tip">
+        Use parameter callbacks to validate values before they take effect. This prevents invalid configurations from crashing your node.
+    </div>
+</div>
+
+<!-- ==================== PAGE 13: LAUNCH FILES ==================== -->
+<div class="page">
+    <h2>Launch Files - Orchestrating Multi-Node Systems</h2>
+
+    <p>Launch files start multiple nodes simultaneously, configure parameters, set up remappings, and define event handlers. In ROS2, launch files are written in <strong>Python</strong> (preferred), XML, or YAML.</p>
+
+    <div class="image-container">
+        <img src="https://images.unsplash.com/photo-1581092160607-ee22621dd758?w=800&h=250&fit=crop" alt="Orchestration">
+        <p class="image-caption">Launch files orchestrate complex multi-node robotic systems</p>
+    </div>
+
+    <h3>Complete Python Launch File</h3>
+    <pre>
+from launch import LaunchDescription
+from launch.actions import DeclareLaunchArgument, LogInfo
+from launch.substitutions import LaunchConfiguration
+from launch_ros.actions import Node
+from launch.conditions import IfCondition
+import os
+from ament_index_python.packages import get_package_share_directory
+
+
+def generate_launch_description():
+    # Declare launch arguments
+    use_sim = DeclareLaunchArgument(
+        'use_sim', default_value='true',
+        description='Use simulation time'
+    )
+
+    robot_name = DeclareLaunchArgument(
+        'robot_name', default_value='my_robot',
+        description='Name of the robot'
+    )
+
+    # Get package path for config files
+    pkg_dir = get_package_share_directory('my_robot_pkg')
+    params_file = os.path.join(pkg_dir, 'config', 'params.yaml')
+
+    # Define nodes
+    driver_node = Node(
+        package='my_robot_pkg',
+        executable='robot_driver',
+        name='robot_driver',
+        parameters=[params_file, {
+            'use_sim_time': LaunchConfiguration('use_sim')
+        }],
+        remappings=[
+            ('/cmd_vel', '/my_robot/cmd_vel'),
+            ('/odom', '/my_robot/odom'),
+        ],
+        output='screen'
+    )
+
+    perception_node = Node(
+        package='my_robot_pkg',
+        executable='obstacle_detector',
+        name='obstacle_detector',
+        parameters=[{'obstacle_threshold': 0.3}],
+        output='screen'
+    )
+
+    return LaunchDescription([
+        use_sim,
+        robot_name,
+        LogInfo(msg='Launching robot nodes...'),
+        driver_node,
+        perception_node,
+    ])
+    </pre>
+
+    <h3>Running Launch Files</h3>
+    <pre>
+# Run launch file
+ros2 launch my_robot_pkg robot_launch.py
+
+# Override arguments
+ros2 launch my_robot_pkg robot_launch.py use_sim:=false robot_name:=atlas
+    </pre>
+
+    <div class="activity-box">
+        <h3>Activity 3: Write a Launch File</h3>
+        <p><strong>Task:</strong> Create a Python launch file that starts:</p>
+        <ol>
+            <li>A <code>turtlesim_node</code> from the <code>turtlesim</code> package</li>
+            <li>A <code>turtle_teleop_key</code> node from the same package</li>
+            <li>Add a launch argument <code>background_color_r</code> (default: 100) and pass it as a parameter to the turtlesim node</li>
+            <li>Remap <code>/turtle1/cmd_vel</code> to <code>/robot/cmd_vel</code></li>
+        </ol>
+        <p><strong>Run with:</strong> <code>ros2 launch my_robot_pkg turtlesim_launch.py</code></p>
+    </div>
+
+    <div class="warning-box">
+        <strong>Remember:</strong> Add your launch file directory to <code>data_files</code> in <code>setup.py</code> so it gets installed:
+        <pre style="margin-top:10px;">(os.path.join('share', package_name, 'launch'),
+ glob(os.path.join('launch', '*launch.[pxy][yma]*')))</pre>
+    </div>
+</div>
+
+<!-- ==================== PAGE 14: QoS ==================== -->
+<div class="page">
+    <h2>Quality of Service (QoS) Policies</h2>
+
+    <p>QoS policies determine how data is delivered between publishers and subscribers. Proper QoS configuration is critical for reliable robotic systems, especially when mixing real-time sensor data with control commands.</p>
+
+    <div class="image-container">
+        <img src="https://images.unsplash.com/photo-1563013544-824ae1b704d3?w=800&h=250&fit=crop" alt="Quality assurance">
+        <p class="image-caption">QoS policies ensure the right data reaches the right place at the right time</p>
+    </div>
+
+    <h3>QoS Policy Overview</h3>
+    <table>
+        <tr><th>Policy</th><th>Options</th><th>Description</th></tr>
+        <tr><td><strong>Reliability</strong></td><td>RELIABLE / BEST_EFFORT</td><td>Whether messages are guaranteed to be delivered</td></tr>
+        <tr><td><strong>Durability</strong></td><td>TRANSIENT_LOCAL / VOLATILE</td><td>Whether late joiners receive the last message</td></tr>
+        <tr><td><strong>History</strong></td><td>KEEP_LAST(n) / KEEP_ALL</td><td>How many messages to store</td></tr>
+        <tr><td><strong>Deadline</strong></td><td>Duration</td><td>Max expected time between messages</td></tr>
+        <tr><td><strong>Lifespan</strong></td><td>Duration</td><td>Max age of a message before discard</td></tr>
+        <tr><td><strong>Liveliness</strong></td><td>AUTOMATIC / MANUAL</td><td>How to determine if a publisher is alive</td></tr>
+    </table>
+
+    <h3>Predefined QoS Profiles</h3>
+    <table>
+        <tr><th>Profile</th><th>Reliability</th><th>Durability</th><th>History</th><th>Use Case</th></tr>
+        <tr><td><code>qos_profile_default</code></td><td>RELIABLE</td><td>VOLATILE</td><td>KEEP_LAST(10)</td><td>General purpose</td></tr>
+        <tr><td><code>qos_profile_sensor_data</code></td><td>BEST_EFFORT</td><td>VOLATILE</td><td>KEEP_LAST(5)</td><td>High-frequency sensors</td></tr>
+        <tr><td><code>qos_profile_parameters</code></td><td>RELIABLE</td><td>VOLATILE</td><td>KEEP_LAST(1000)</td><td>Parameter events</td></tr>
+        <tr><td><code>qos_profile_services_default</code></td><td>RELIABLE</td><td>VOLATILE</td><td>KEEP_LAST(10)</td><td>Service calls</td></tr>
+        <tr><td><code>qos_profile_system_default</code></td><td>RELIABLE</td><td>TRANSIENT_LOCAL</td><td>KEEP_LAST(1)</td><td>System state topics</td></tr>
+    </table>
+
+    <h3>QoS Compatibility</h3>
+    <p>Publisher and subscriber QoS must be compatible for a connection to form:</p>
+
+    <div class="math">
+        \[
+        \text{Compatible if:} \quad Q_{\text{pub}} \geq Q_{\text{sub}}
+        \]
+        \[
+        \text{RELIABLE} \geq \text{BEST\_EFFORT}, \quad \text{TRANSIENT\_LOCAL} \geq \text{VOLATILE}
+        \]
+    </div>
+
+    <div class="two-column">
+        <div class="example-box">
+            <h4>Works (Compatible)</h4>
+            <p>Publisher: RELIABLE<br>Subscriber: BEST_EFFORT</p>
+            <p style="color: #4CAF50; font-weight: bold;">Connection established</p>
+        </div>
+        <div class="warning-box">
+            <h4>Fails (Incompatible)</h4>
+            <p>Publisher: BEST_EFFORT<br>Subscriber: RELIABLE</p>
+            <p style="color: #e91e63; font-weight: bold;">No connection!</p>
+        </div>
+    </div>
+
+    <div class="tip">
+        When debugging missing messages, always check QoS compatibility first: <code>ros2 topic info /topic_name --verbose</code> shows QoS profiles for all publishers and subscribers.
+    </div>
+</div>
+
+<!-- ==================== PAGE 15: TF2 ==================== -->
+<div class="page">
+    <h2>tf2 - Transform Library</h2>
+
+    <p>The <strong>tf2</strong> library manages coordinate frame transformations. In robotics, every sensor and actuator has its own reference frame, and tf2 keeps track of the relationships between them over time.</p>
+
+    <div class="image-container">
+        <img src="https://images.unsplash.com/photo-1581092918056-0c4c3acd3789?w=800&h=250&fit=crop" alt="Coordinate systems">
+        <p class="image-caption">Coordinate frame transformations are essential for sensor fusion and navigation</p>
+    </div>
+
+    <div class="diagram">
+        <h4 style="text-align:center; margin-bottom:10px;">Robot TF Tree Example</h4>
+        <svg viewBox="0 0 700 300" xmlns="http://www.w3.org/2000/svg" style="width:100%; max-height:280px;">
+            <!-- map frame -->
+            <rect x="280" y="10" width="140" height="40" rx="8" fill="#667eea"/>
+            <text x="350" y="35" text-anchor="middle" fill="white" font-size="13" font-weight="bold">map</text>
+
+            <line x1="350" y1="50" x2="350" y2="80" stroke="#333" stroke-width="2"/>
+
+            <!-- odom frame -->
+            <rect x="280" y="80" width="140" height="40" rx="8" fill="#764ba2"/>
+            <text x="350" y="105" text-anchor="middle" fill="white" font-size="13" font-weight="bold">odom</text>
+
+            <line x1="350" y1="120" x2="350" y2="150" stroke="#333" stroke-width="2"/>
+
+            <!-- base_link -->
+            <rect x="280" y="150" width="140" height="40" rx="8" fill="#4CAF50"/>
+            <text x="350" y="175" text-anchor="middle" fill="white" font-size="13" font-weight="bold">base_link</text>
+
+            <!-- Children -->
+            <line x1="300" y1="190" x2="120" y2="230" stroke="#333" stroke-width="2"/>
+            <line x1="350" y1="190" x2="350" y2="230" stroke="#333" stroke-width="2"/>
+            <line x1="400" y1="190" x2="580" y2="230" stroke="#333" stroke-width="2"/>
+
+            <rect x="40" y="230" width="160" height="40" rx="8" fill="#ff9800"/>
+            <text x="120" y="255" text-anchor="middle" fill="white" font-size="12" font-weight="bold">base_laser</text>
+
+            <rect x="270" y="230" width="160" height="40" rx="8" fill="#ff9800"/>
+            <text x="350" y="255" text-anchor="middle" fill="white" font-size="12" font-weight="bold">camera_link</text>
+
+            <rect x="500" y="230" width="160" height="40" rx="8" fill="#ff9800"/>
+            <text x="580" y="255" text-anchor="middle" fill="white" font-size="12" font-weight="bold">imu_link</text>
+
+            <!-- Labels -->
+            <text x="305" y="68" text-anchor="end" font-size="10" fill="#888" font-style="italic">amcl / SLAM</text>
+            <text x="305" y="138" text-anchor="end" font-size="10" fill="#888" font-style="italic">wheel odometry</text>
+            <text x="180" y="218" font-size="10" fill="#888" font-style="italic">static</text>
+            <text x="330" y="218" font-size="10" fill="#888" font-style="italic">static</text>
+            <text x="510" y="218" font-size="10" fill="#888" font-style="italic">static</text>
+        </svg>
+    </div>
+
+    <h3>Static vs Dynamic Transforms</h3>
+    <div class="two-column">
+        <div class="info-box">
+            <h4>Static Transforms</h4>
+            <p>Fixed relationships (e.g., sensor mount positions). Published once using <code>/static_tf</code> with TRANSIENT_LOCAL durability.</p>
+            <pre style="font-size:0.85em;">ros2 run tf2_ros static_transform_publisher \
+  --x 0.1 --y 0.0 --z 0.2 \
+  --roll 0 --pitch 0 --yaw 0 \
+  --frame-id base_link \
+  --child-frame-id base_laser</pre>
+        </div>
+        <div class="info-box">
+            <h4>Dynamic Transforms</h4>
+            <p>Time-varying (e.g., odom-to-base_link). Continuously broadcast at high frequency (typically 50-100 Hz).</p>
+            <pre style="font-size:0.85em;">from tf2_ros import TransformBroadcaster
+
+br = TransformBroadcaster(self)
+t = TransformStamped()
+t.header.stamp = self.get_clock().now().to_msg()
+t.header.frame_id = 'odom'
+t.child_frame_id = 'base_link'
+t.transform.translation.x = x
+br.sendTransform(t)</pre>
+        </div>
+    </div>
+
+    <h3>Listening for Transforms</h3>
+    <pre>
+from tf2_ros import Buffer, TransformListener
+
+self.tf_buffer = Buffer()
+self.tf_listener = TransformListener(self.tf_buffer, self)
+
+# Look up a transform
+try:
+    t = self.tf_buffer.lookup_transform(
+        'map', 'base_laser',
+        rclpy.time.Time()   # Latest available
+    )
+    self.get_logger().info(f'Laser in map frame: {t.transform.translation}')
+except Exception as e:
+    self.get_logger().warn(f'Transform not available: {e}')
+    </pre>
+</div>
+
+<!-- ==================== PAGE 16: CLI TOOLS ==================== -->
+<div class="page">
+    <h2>ROS2 CLI Tools</h2>
+
+    <p>ROS2 provides a comprehensive set of command-line tools for introspection, debugging, and testing. These tools are essential for development and troubleshooting.</p>
+
+    <div class="image-container">
+        <img src="https://images.unsplash.com/photo-1629654297299-c8506221ca97?w=800&h=250&fit=crop" alt="Terminal command line">
+        <p class="image-caption">Command-line tools are the primary interface for ROS2 development and debugging</p>
+    </div>
+
+    <h3>Essential CLI Commands</h3>
+    <table>
+        <tr><th>Category</th><th>Command</th><th>Description</th></tr>
+        <tr><td rowspan="3"><strong>Nodes</strong></td><td><code>ros2 node list</code></td><td>List all running nodes</td></tr>
+        <tr><td><code>ros2 node info /node_name</code></td><td>Show node's publishers, subscribers, services</td></tr>
+        <tr><td><code>ros2 run pkg node</code></td><td>Run a node from a package</td></tr>
+        <tr><td rowspan="4"><strong>Topics</strong></td><td><code>ros2 topic list</code></td><td>List all active topics</td></tr>
+        <tr><td><code>ros2 topic echo /topic</code></td><td>Print messages on a topic</td></tr>
+        <tr><td><code>ros2 topic pub /topic type msg</code></td><td>Publish a message to a topic</td></tr>
+        <tr><td><code>ros2 topic hz /topic</code></td><td>Show publishing rate</td></tr>
+        <tr><td rowspan="2"><strong>Services</strong></td><td><code>ros2 service list</code></td><td>List available services</td></tr>
+        <tr><td><code>ros2 service call /srv type req</code></td><td>Call a service</td></tr>
+        <tr><td rowspan="2"><strong>Actions</strong></td><td><code>ros2 action list</code></td><td>List available actions</td></tr>
+        <tr><td><code>ros2 action send_goal /action type goal</code></td><td>Send a goal to an action server</td></tr>
+        <tr><td rowspan="3"><strong>Parameters</strong></td><td><code>ros2 param list /node</code></td><td>List parameters of a node</td></tr>
+        <tr><td><code>ros2 param get /node param</code></td><td>Get a parameter value</td></tr>
+        <tr><td><code>ros2 param set /node param val</code></td><td>Set a parameter value</td></tr>
+        <tr><td rowspan="2"><strong>Bag</strong></td><td><code>ros2 bag record -a</code></td><td>Record all topics to a bag file</td></tr>
+        <tr><td><code>ros2 bag play bag_dir</code></td><td>Play back recorded data</td></tr>
+        <tr><td><strong>Interfaces</strong></td><td><code>ros2 interface show type</code></td><td>Show message/service/action definition</td></tr>
+    </table>
+
+    <h3>Graphical Tools</h3>
+    <div class="three-column">
+        <div class="sensor-card">
+            <h4>rqt_graph</h4>
+            <p>Visualise the node/topic graph</p>
+            <code>rqt_graph</code>
+        </div>
+        <div class="sensor-card">
+            <h4>rqt_console</h4>
+            <p>View and filter log messages</p>
+            <code>rqt_console</code>
+        </div>
+        <div class="sensor-card">
+            <h4>rviz2</h4>
+            <p>3D visualisation of robot state, sensors, maps</p>
+            <code>rviz2</code>
+        </div>
+    </div>
+
+    <div class="activity-box">
+        <h3>Activity 4: Exploring ROS2 with CLI Tools</h3>
+        <p><strong>Task:</strong> Use CLI tools to explore a running turtlesim system.</p>
+        <ol>
+            <li>Start turtlesim: <code>ros2 run turtlesim turtlesim_node</code></li>
+            <li>List all nodes, topics, and services</li>
+            <li>Echo the <code>/turtle1/pose</code> topic and identify the message type</li>
+            <li>Publish a velocity command: <code>ros2 topic pub --once /turtle1/cmd_vel geometry_msgs/msg/Twist "{linear: {x: 2.0}, angular: {z: 1.8}}"</code></li>
+            <li>Call the <code>/turtle1/set_pen</code> service to change pen colour</li>
+            <li>Check the publishing rate of <code>/turtle1/pose</code> with <code>ros2 topic hz</code></li>
+            <li>Visualise the computation graph using <code>rqt_graph</code></li>
+        </ol>
+    </div>
+</div>
+
+<!-- ==================== PAGE 17: BEST PRACTICES ==================== -->
+<div class="page">
+    <h2>Best Practices &amp; Common Patterns</h2>
+
+    <p>Following established patterns and best practices ensures your ROS2 code is maintainable, performant, and production-ready.</p>
+
+    <div class="image-container">
+        <img src="https://images.unsplash.com/photo-1504639725590-34d0984388bd?w=800&h=250&fit=crop" alt="Best practices in engineering">
+        <p class="image-caption">Clean architecture and best practices are essential for robust robotic systems</p>
+    </div>
+
+    <h3>Component Nodes (Composable)</h3>
+    <p>Component nodes run in a shared process, reducing overhead from inter-process communication. They are loaded as plugins into a <strong>component container</strong>.</p>
+
+    <pre>
+# Run a component container
+ros2 run rclcpp_components component_container
+
+# Load components into the container
+ros2 component load /ComponentManager my_pkg MyPublisher
+ros2 component load /ComponentManager my_pkg MySubscriber
+    </pre>
+
+    <div class="info-box">
+        <strong>Benefit:</strong> Nodes in the same process communicate via shared memory (zero-copy), dramatically reducing latency for high-bandwidth data like images.
+    </div>
+
+    <h3>Executors &amp; Callback Groups</h3>
+
+    <div class="two-column">
+        <div>
+            <h4>Executor Types</h4>
+            <ul>
+                <li><strong>SingleThreadedExecutor</strong> -- default, processes callbacks sequentially</li>
+                <li><strong>MultiThreadedExecutor</strong> -- uses a thread pool, allows concurrent callbacks</li>
+            </ul>
+            <pre>
+from rclpy.executors import MultiThreadedExecutor
+
+executor = MultiThreadedExecutor(
+    num_threads=4
+)
+executor.add_node(node_a)
+executor.add_node(node_b)
+executor.spin()
+            </pre>
+        </div>
+        <div>
+            <h4>Callback Groups</h4>
+            <ul>
+                <li><strong>MutuallyExclusive</strong> -- only one callback at a time (thread-safe)</li>
+                <li><strong>Reentrant</strong> -- allows parallel execution of callbacks</li>
+            </ul>
+            <pre>
+from rclpy.callback_groups import (
+    MutuallyExclusiveCallbackGroup,
+    ReentrantCallbackGroup
+)
+
+self.sensor_group = ReentrantCallbackGroup()
+self.control_group = MutuallyExclusiveCallbackGroup()
+
+self.create_subscription(
+    ..., callback_group=self.sensor_group
+)
+            </pre>
+        </div>
+    </div>
+
+    <h3>Design Guidelines</h3>
+
+    <div class="checklist">
+        <ul>
+            <li>One node per responsibility (single responsibility principle)</li>
+            <li>Use parameters for all configurable values -- never hardcode</li>
+            <li>Always specify QoS profiles explicitly, do not rely on defaults</li>
+            <li>Use lifecycle nodes for hardware drivers and critical components</li>
+            <li>Prefer async service calls over synchronous ones</li>
+            <li>Use <code>callback_groups</code> to control concurrency with <code>MultiThreadedExecutor</code></li>
+            <li>Log at appropriate levels: DEBUG for development, INFO for normal operation, WARN/ERROR for issues</li>
+            <li>Write unit tests with <code>pytest</code> and integration tests with <code>launch_testing</code></li>
+            <li>Use namespaces and remappings for multi-robot deployments</li>
+            <li>Document your interfaces (topics, services, parameters) in the package README</li>
+        </ul>
+    </div>
+
+    <div class="warning-box">
+        <strong>Common Pitfalls:</strong>
+        <ul>
+            <li>Blocking in callbacks (use async patterns or timers instead)</li>
+            <li>Missing QoS compatibility between publishers and subscribers</li>
+            <li>Forgetting to source the workspace in new terminals</li>
+            <li>Not handling <code>KeyboardInterrupt</code> for clean shutdown</li>
+        </ul>
+    </div>
+</div>
+
+<!-- ==================== PAGE 18: SUMMARY & REFERENCES ==================== -->
+<div class="page">
+    <h2>Summary</h2>
+
+    <p>This lecture covered the fundamental building blocks of ROS2, the middleware that powers modern robotic systems.</p>
+
+    <div class="image-container">
+        <img src="https://images.unsplash.com/photo-1531746790095-e5995f614585?w=800&h=250&fit=crop" alt="Robotics summary">
+        <p class="image-caption">ROS2 provides the foundation for building sophisticated robotic applications</p>
+    </div>
+
+    <h3>Key Takeaways</h3>
+
+    <div class="three-column">
+        <div class="sensor-card">
+            <h4>Architecture</h4>
+            <p>DDS-based, no central master, layered design (rcl, rmw, DDS)</p>
+        </div>
+        <div class="sensor-card">
+            <h4>Communication</h4>
+            <p>Topics (pub/sub), Services (req/res), Actions (long-running + feedback)</p>
+        </div>
+        <div class="sensor-card">
+            <h4>Configuration</h4>
+            <p>Parameters, launch files, QoS policies, YAML configs</p>
+        </div>
+    </div>
+
+    <div class="diagram">
+        <h4 style="text-align:center;">ROS2 Communication Patterns Summary</h4>
+        <svg viewBox="0 0 700 130" xmlns="http://www.w3.org/2000/svg" style="width:100%; max-height:130px;">
+            <rect x="10" y="20" width="200" height="90" rx="10" fill="#667eea"/>
+            <text x="110" y="55" text-anchor="middle" fill="white" font-size="14" font-weight="bold">Topics</text>
+            <text x="110" y="80" text-anchor="middle" fill="white" font-size="11">Continuous, async</text>
+            <text x="110" y="95" text-anchor="middle" fill="white" font-size="11">Many-to-many</text>
+
+            <rect x="250" y="20" width="200" height="90" rx="10" fill="#764ba2"/>
+            <text x="350" y="55" text-anchor="middle" fill="white" font-size="14" font-weight="bold">Services</text>
+            <text x="350" y="80" text-anchor="middle" fill="white" font-size="11">Quick, synchronous</text>
+            <text x="350" y="95" text-anchor="middle" fill="white" font-size="11">One-to-one</text>
+
+            <rect x="490" y="20" width="200" height="90" rx="10" fill="#4CAF50"/>
+            <text x="590" y="55" text-anchor="middle" fill="white" font-size="14" font-weight="bold">Actions</text>
+            <text x="590" y="80" text-anchor="middle" fill="white" font-size="11">Long-running + feedback</text>
+            <text x="590" y="95" text-anchor="middle" fill="white" font-size="11">Cancellable</text>
+        </svg>
+    </div>
+
+    <h3>Next Week: Lab Preview</h3>
+    <div class="info-box">
+        <strong>Week 4 Lab:</strong> Building a complete ROS2 application for a mobile robot:
+        <ul>
+            <li>Creating custom message and service definitions</li>
+            <li>Building a multi-node sensor processing pipeline</li>
+            <li>Implementing a simple obstacle avoidance behaviour</li>
+            <li>Writing launch files and parameter configurations</li>
+            <li>Using rqt and rviz2 for visualisation and debugging</li>
+        </ul>
+    </div>
+
+    <h3>References</h3>
+    <ol>
+        <li>ROS2 Documentation -- <a href="https://docs.ros.org/en/humble/">https://docs.ros.org/en/humble/</a></li>
+        <li>ROS2 Design Articles -- <a href="https://design.ros2.org/">https://design.ros2.org/</a></li>
+        <li>DDS Specification -- OMG Data Distribution Service v1.4</li>
+        <li>Macenski, S. et al. (2022). "Robot Operating System 2: Design, Architecture, and Uses in the Wild." <em>Science Robotics</em>, 7(66).</li>
+        <li>Open Robotics -- <a href="https://www.openrobotics.org/">https://www.openrobotics.org/</a></li>
+        <li>tf2 Documentation -- <a href="https://docs.ros.org/en/humble/Concepts/About-Tf2.html">ROS2 tf2 Concepts</a></li>
+        <li>ROS2 Tutorials -- <a href="https://docs.ros.org/en/humble/Tutorials.html">https://docs.ros.org/en/humble/Tutorials.html</a></li>
+        <li>Quigley, M. et al. (2009). "ROS: an open-source Robot Operating System." <em>ICRA Workshop</em>.</li>
+    </ol>
+
+    <div style="text-align: center; margin-top: 30px; padding: 20px; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); border-radius: 10px; color: white;">
+        <h3 style="color: white;">University of West London</h3>
+        <p>M.Sc. Robotics &amp; Drone Engineering | TC70045E</p>
+        <p>Dr. Abdul Manan Khan</p>
+        <p style="margin-top: 10px; opacity: 0.8;">Week 3 -- ROS2 Fundamentals &amp; Node Architecture</p>
+    </div>
+</div>
+
+</body>
+</html>

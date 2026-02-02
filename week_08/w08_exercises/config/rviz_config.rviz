@@ -1,0 +1,64 @@
+Panels:
+  - Class: rviz_common/Displays
+    Name: Displays
+Visualization Manager:
+  Class: ""
+  Displays:
+    - Class: rviz_default_plugins/Grid
+      Name: Grid
+      Enabled: true
+      Cell Size: 5
+      Color: 160; 160; 164
+    - Class: rviz_default_plugins/PointCloud2
+      Name: LiDAR Points
+      Enabled: true
+      Topic:
+        Value: /os1_cloud_node/points
+      Size (Pixels): 2
+      Color Transformer: AxisColor
+      Axis: Z
+    - Class: rviz_default_plugins/PointCloud2
+      Name: Occupancy Grid 3D
+      Enabled: true
+      Topic:
+        Value: /occupancy_grid_3d
+      Size (Pixels): 2
+      Color Transformer: FlatColor
+      Color: 255; 165; 0
+    - Class: rviz_default_plugins/Path
+      Name: Planned Path 3D
+      Enabled: true
+      Topic:
+        Value: /planned_path_3d
+      Color: 0; 255; 0
+      Line Style: Lines
+    - Class: rviz_default_plugins/Marker
+      Name: RRT Tree
+      Enabled: true
+      Topic:
+        Value: /rrt_tree
+    - Class: rviz_default_plugins/Path
+      Name: Smooth Trajectory
+      Enabled: true
+      Topic:
+        Value: /smooth_trajectory
+      Color: 255; 0; 255
+      Line Style: Lines
+  Global Options:
+    Fixed Frame: odom
+    Frame Rate: 30
+  Tools:
+    - Class: rviz_default_plugins/MoveCamera
+    - Class: rviz_default_plugins/FocusCamera
+  Value: true
+  Views:
+    Current:
+      Class: rviz_default_plugins/Orbit
+      Distance: 30
+      Pitch: 0.5
+      Yaw: 0
+Window Geometry:
+  Width: 1200
+  Height: 800
+  Displays:
+    collapsed: false

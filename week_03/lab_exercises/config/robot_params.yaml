@@ -1,0 +1,52 @@
+# Robot System Configuration
+# Used by Task 6 (Launch System Simulation)
+
+nodes:
+  - name: sensor_node
+    parameters:
+      scan_rate: 10.0
+      imu_rate: 50.0
+      scan_topic: /scan
+      imu_topic: /imu/data
+      frame_id: base_laser
+      range_min: 0.1
+      range_max: 30.0
+      num_beams: 360
+    publishers:
+      - /scan
+      - /imu/data
+    subscribers: []
+    remappings:
+      /scan: /robot1/scan
+      /imu/data: /robot1/imu/data
+
+  - name: controller_node
+    parameters:
+      max_linear_speed: 1.0
+      max_angular_speed: 2.0
+      kp: 1.5
+      ki: 0.01
+      kd: 0.3
+      control_rate: 20.0
+    publishers:
+      - /cmd_vel
+    subscribers:
+      - /odom
+    remappings:
+      /cmd_vel: /robot1/cmd_vel
+      /odom: /robot1/odom
+
+  - name: monitor_node
+    parameters:
+      log_rate: 1.0
+      log_file: /tmp/robot_monitor.log
+      verbose: true
+    publishers: []
+    subscribers:
+      - /odom
+      - /cmd_vel
+      - /scan
+    remappings:
+      /odom: /robot1/odom
+      /cmd_vel: /robot1/cmd_vel
+      /scan: /robot1/scan

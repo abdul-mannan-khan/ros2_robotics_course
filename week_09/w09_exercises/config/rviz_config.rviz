@@ -1,0 +1,53 @@
+Panels:
+  - Class: rviz_common/Displays
+    Name: Displays
+Visualization Manager:
+  Class: ""
+  Displays:
+    - Class: rviz_default_plugins/Grid
+      Name: Grid
+      Enabled: true
+      Cell Size: 5
+      Color: 160; 160; 164
+    - Class: rviz_default_plugins/PointCloud2
+      Name: Local PointCloud
+      Enabled: true
+      Topic:
+        Value: /local_pointcloud
+      Size (Pixels): 2
+      Color Transformer: AxisColor
+      Axis: Z
+    - Class: rviz_default_plugins/Path
+      Name: Local Trajectory
+      Enabled: true
+      Topic:
+        Value: /local_trajectory
+      Color: 0; 255; 0
+      Line Style: Lines
+    - Class: rviz_default_plugins/Odometry
+      Name: Odometry
+      Enabled: true
+      Topic:
+        Value: /odom
+      Color: 0; 100; 255
+      Keep: 100
+      Shape:
+        Value: Arrow
+  Global Options:
+    Fixed Frame: odom
+    Frame Rate: 30
+  Tools:
+    - Class: rviz_default_plugins/MoveCamera
+    - Class: rviz_default_plugins/FocusCamera
+  Value: true
+  Views:
+    Current:
+      Class: rviz_default_plugins/Orbit
+      Distance: 30
+      Pitch: 0.5
+      Yaw: 0
+Window Geometry:
+  Width: 1200
+  Height: 800
+  Displays:
+    collapsed: false

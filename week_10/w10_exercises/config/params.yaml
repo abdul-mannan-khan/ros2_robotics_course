@@ -1,0 +1,20 @@
+# Week 10: Computer Vision Parameters
+image_feature_detector_node:
+  ros__parameters:
+    feature_type: "ORB"
+    max_features: 500
+    quality_threshold: 0.01
+
+stereo_depth_estimator_node:
+  ros__parameters:
+    baseline: 0.54
+    focal_length: 721.5
+    num_disparities: 128
+    block_size: 11
+
+object_tracker_node:
+  ros__parameters:
+    detection_threshold: 500.0
+    max_age: 10
+    min_hits: 3
+    iou_threshold: 0.3

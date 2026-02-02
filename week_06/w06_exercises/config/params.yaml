@@ -1,0 +1,23 @@
+# Week 6: Quadrotor Dynamics Parameters
+attitude_estimator_node:
+  ros__parameters:
+    alpha: 0.98
+
+thrust_mixer_node:
+  ros__parameters:
+    arm_length: 0.17
+    k_thrust: 1.0e-5
+    k_torque: 1.0e-7
+
+attitude_controller_node:
+  ros__parameters:
+    kp_roll: 5.0
+    kd_roll: 0.5
+    kp_pitch: 5.0
+    kd_pitch: 0.5
+    kp_yaw: 2.0
+    kd_yaw: 0.3
+    arm_length: 0.17
+    k_thrust: 1.0e-5
+    k_torque: 1.0e-7
+    hover_speed: 500.0

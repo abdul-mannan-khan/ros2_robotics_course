@@ -1,0 +1,56 @@
+Panels:
+  - Class: rviz_common/Displays
+    Name: Displays
+Visualization Manager:
+  Class: ""
+  Displays:
+    - Class: rviz_default_plugins/Grid
+      Name: Grid
+      Enabled: true
+      Cell Size: 5
+      Color: 160; 160; 164
+    - Class: rviz_default_plugins/PointCloud2
+      Name: Raw PointCloud
+      Enabled: true
+      Topic:
+        Value: /velodyne_points
+      Size (Pixels): 2
+      Color Transformer: AxisColor
+      Axis: Z
+      Autocompute Intensity Bounds: true
+    - Class: rviz_default_plugins/PointCloud2
+      Name: Filtered PointCloud
+      Enabled: true
+      Topic:
+        Value: /filtered_points
+      Size (Pixels): 3
+      Color Transformer: FlatColor
+      Color: 0; 255; 0
+    - Class: rviz_default_plugins/PointCloud2
+      Name: Ground
+      Enabled: true
+      Topic:
+        Value: /ground_plane
+      Size (Pixels): 2
+      Color Transformer: FlatColor
+      Color: 0; 0; 255
+    - Class: rviz_default_plugins/PointCloud2
+      Name: Obstacles
+      Enabled: true
+      Topic:
+        Value: /obstacles
+      Size (Pixels): 4
+      Color Transformer: FlatColor
+      Color: 255; 0; 0
+  Global Options:
+    Fixed Frame: velodyne
+  Tools:
+    - Class: rviz_default_plugins/MoveCamera
+  Views:
+    Current:
+      Class: rviz_default_plugins/Orbit
+      Distance: 50
+      Focal Point:
+        X: 0
+        Y: 0
+        Z: 0

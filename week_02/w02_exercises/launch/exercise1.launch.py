@@ -1,0 +1,14 @@
+#!/usr/bin/env python3
+import os
+from launch import LaunchDescription
+from launch.actions import ExecuteProcess
+from launch_ros.actions import Node
+
+def generate_launch_description():
+    pkg=os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+    bag=os.path.join(pkg,"bag_data","synthetic_imu_pose")
+    cfg=os.path.join(pkg,"config","params.yaml")
+    return LaunchDescription([
+        ExecuteProcess(cmd=["ros2","bag","play",bag,"--loop"],output="screen"),
+        Node(package="week_02_sensor_fusion",executable="exercise1_node",name="exercise1_node",parameters=[cfg],output="screen"),
+    ])

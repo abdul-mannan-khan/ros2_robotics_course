@@ -1,0 +1,36 @@
+
+====================================================================
+         CONTROLLER COMPARISON SUMMARY - Week 11
+====================================================================
+
+Scenario         | PID       | LQR       | MPC
+-----------------+-----------+-----------+-----------
+Hover            |           |           |
+  Rise Time      | Medium    | Fast      | Fast
+  Overshoot      | Possible  | Minimal   | Minimal
+  Tuning         | 3 params  | Q, R mat  | Q, R, N
+
+Tracking         |           |           |
+  Sine RMSE      | Highest   | Medium    | Lowest*
+  Phase Lag      | Yes       | Small     | Predictive
+
+Constrained      |           |           |
+  Handles well?  | Clip only | Clip only | Native
+  Performance    | Worst     | Medium    | Best
+
+Disturbance      |           |           |
+  Recovery       | Slow      | Fast      | Fast
+  Max Deviation  | Largest   | Medium    | Smallest*
+
+Computation      |           |           |
+  Per step       | ~0.001 ms | ~0.01 ms  | ~1-10 ms
+  Real-time OK?  | Always    | Always    | Depends on N
+
+* MPC advantage is most pronounced with constraints.
+  Without constraints, LQR ~ MPC as horizon -> infinity.
+
+RECOMMENDATION:
+- Simple hover/setpoint: PID is sufficient
+- Moderate performance: LQR (optimal, guaranteed margins)
+- Constraints + trajectory: MPC (best performance)
+====================================================================

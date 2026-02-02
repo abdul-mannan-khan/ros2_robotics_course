@@ -1,0 +1,22 @@
+# Week 9: EGO-Planner Parameters
+depth_to_pointcloud:
+  ros__parameters:
+    fx: 160.0
+    fy: 120.0
+    cx: 160.0
+    cy: 120.0
+    max_depth: 10.0
+
+local_planner:
+  ros__parameters:
+    goal_xyz: [20.0, 0.0, 1.5]
+    planning_horizon: 5.0
+    safety_margin: 0.5
+
+trajectory_tracker:
+  ros__parameters:
+    kp_pos: 5.0
+    kd_pos: 2.0
+    kp_yaw: 2.0
+    max_thrust: 20.0
+    gravity: 9.81

@@ -1,0 +1,7 @@
+# Ground Truth Obstacles
+# label, cx, cy, cz, sx, sy, sz
+car_1, 5, 0, 1.0, 2.0, 1.0, 2.0
+pedestrian_1, 10, 3, 0.75, 1.0, 1.0, 1.5
+truck_1, 15, -2, 1.5, 4.0, 2.0, 3.0
+pole_1, 8, -5, 0.5, 0.6, 0.6, 1.0
+car_2, 20, 1, 1.0, 2.0, 1.0, 2.0

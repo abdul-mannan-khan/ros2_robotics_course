@@ -1,0 +1,1526 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Week 10: Computer Vision for Drones - TC70045E</title>
+    <script>
+        MathJax = {
+            tex: { inlineMath: [['\\(', '\\)']], displayMath: [['\\[', '\\]']] },
+            svg: { fontCache: 'global' }
+        };
+    </script>
+    <script src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-svg.js" async></script>
+    <style>
+        @page { size: A4; margin: 2cm; }
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; line-height: 1.6; color: #333; background: #f5f5f5; }
+        .page { width: 21cm; min-height: 29.7cm; padding: 2cm; margin: 20px auto; background: white; box-shadow: 0 0 10px rgba(0,0,0,0.1); page-break-after: always; }
+        .header { background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; padding: 30px; text-align: center; border-radius: 10px; margin-bottom: 30px; }
+        .header h1 { font-size: 2.5em; margin-bottom: 10px; }
+        .header p { font-size: 1.2em; opacity: 0.9; }
+        h2 { color: #667eea; border-bottom: 3px solid #764ba2; padding-bottom: 10px; margin: 30px 0 20px 0; font-size: 1.8em; }
+        h3 { color: #764ba2; margin: 25px 0 15px 0; font-size: 1.4em; }
+        h4 { color: #667eea; margin: 20px 0 10px 0; font-size: 1.2em; }
+        .info-box { background: #e8f4f8; border-left: 5px solid #667eea; padding: 20px; margin: 20px 0; border-radius: 5px; }
+        .warning-box { background: #fff4e6; border-left: 5px solid #ff9800; padding: 20px; margin: 20px 0; border-radius: 5px; }
+        .activity-box { background: #f0f8ff; border: 3px solid #4CAF50; padding: 25px; margin: 30px 0; border-radius: 10px; }
+        .activity-box h3 { color: #4CAF50; margin-top: 0; }
+        .image-container { text-align: center; margin: 30px 0; }
+        .image-container img { max-width: 100%; height: auto; border-radius: 10px; box-shadow: 0 4px 6px rgba(0,0,0,0.1); }
+        .image-caption { font-style: italic; color: #666; margin-top: 10px; font-size: 0.9em; }
+        ul, ol { margin: 15px 0 15px 30px; }
+        li { margin: 8px 0; }
+        .two-column { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; margin: 20px 0; }
+        .two-column > * { min-width: 0; overflow: hidden; }
+        .three-column { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 15px; margin: 20px 0; }
+        .three-column > * { min-width: 0; overflow: hidden; }
+        .checklist { background: #f9f9f9; padding: 20px; border-radius: 8px; margin: 20px 0; }
+        .checklist li { list-style: none; padding: 8px 0; }
+        .checklist li:before { content: "\2713 "; color: #4CAF50; font-weight: bold; margin-right: 10px; }
+        table { width: 100%; border-collapse: collapse; margin: 20px 0; table-layout: fixed; word-wrap: break-word; }
+        th, td { border: 1px solid #ddd; padding: 12px; text-align: left; }
+        th { background: #667eea; color: white; }
+        tr:nth-child(even) { background: #f9f9f9; }
+        td code { word-break: break-all; }
+        .diagram { border: 2px solid #667eea; border-radius: 10px; padding: 20px; margin: 20px 0; background: white; }
+        .flow-step { background: #667eea; color: white; padding: 15px; margin: 10px 0; border-radius: 8px; text-align: center; font-weight: bold; }
+        .arrow { text-align: center; font-size: 2em; color: #764ba2; margin: 5px 0; }
+        .tip { background: #fffbea; border-left: 5px solid #ffd700; padding: 15px; margin: 15px 0; border-radius: 5px; }
+        .tip:before { content: "\1F4A1 TIP: "; font-weight: bold; color: #ff9800; }
+        code { background: #f4f4f4; padding: 2px 6px; border-radius: 3px; font-family: 'Courier New', monospace; word-break: break-all; }
+        pre { background: #1e1e1e; color: #d4d4d4; padding: 20px; border-radius: 8px; overflow-x: auto; max-width: 100%; white-space: pre-wrap; word-wrap: break-word; margin: 15px 0; font-family: 'Courier New', monospace; font-size: 0.9em; line-height: 1.5; }
+        .example-box { background: #f0fff0; border: 2px dashed #4CAF50; padding: 20px; margin: 20px 0; border-radius: 8px; }
+        .math { padding: 15px; margin: 15px 0; border-radius: 5px; overflow-x: auto; max-width: 100%; }
+        .sensor-card { background: white; border: 2px solid #667eea; border-radius: 10px; padding: 20px; text-align: center; }
+        .sensor-card h4 { color: #667eea; margin-bottom: 10px; }
+        img { max-width: 100%; height: auto; }
+        svg { max-width: 100%; height: auto; }
+    </style>
+</head>
+<body>
+
+<!-- PAGE 1: Title -->
+<div class="page">
+    <div class="header">
+        <h1>Computer Vision for Drones</h1>
+        <p>TC70045E - Robotics &amp; Drone Engineering M.Sc.</p>
+        <p>Week 10 Lecture</p>
+        <p>Dr. Abdul Manan Khan | University of West London</p>
+    </div>
+
+    <div class="image-container">
+        <img src="https://images.unsplash.com/photo-1508614589041-895b88991e3e?w=900&h=500&fit=crop" alt="Drone with camera flying over landscape">
+        <div class="image-caption">Figure 1.1: Modern drones equipped with high-resolution cameras enable advanced computer vision applications</div>
+    </div>
+
+    <div class="info-box">
+        <h3>About This Lecture</h3>
+        <p>This lecture covers the fundamental and advanced concepts of computer vision as applied to drone systems. We explore camera models, image processing, object detection, visual odometry, depth estimation, and the ROS2 vision pipeline for autonomous drone operations.</p>
+    </div>
+
+    <svg viewBox="0 0 700 120" style="width:100%;height:auto;" xmlns="http://www.w3.org/2000/svg">
+        <defs>
+            <linearGradient id="g1" x1="0%" y1="0%" x2="100%" y2="0%">
+                <stop offset="0%" style="stop-color:#667eea"/>
+                <stop offset="100%" style="stop-color:#764ba2"/>
+            </linearGradient>
+        </defs>
+        <rect x="10" y="20" width="130" height="80" rx="10" fill="url(#g1)"/>
+        <text x="75" y="55" text-anchor="middle" fill="white" font-size="12" font-weight="bold">Camera</text>
+        <text x="75" y="75" text-anchor="middle" fill="white" font-size="12">Models</text>
+        <text x="160" y="65" text-anchor="middle" fill="#764ba2" font-size="24">&#8594;</text>
+        <rect x="180" y="20" width="130" height="80" rx="10" fill="url(#g1)"/>
+        <text x="245" y="55" text-anchor="middle" fill="white" font-size="12" font-weight="bold">Image</text>
+        <text x="245" y="75" text-anchor="middle" fill="white" font-size="12">Processing</text>
+        <text x="330" y="65" text-anchor="middle" fill="#764ba2" font-size="24">&#8594;</text>
+        <rect x="350" y="20" width="130" height="80" rx="10" fill="url(#g1)"/>
+        <text x="415" y="55" text-anchor="middle" fill="white" font-size="12" font-weight="bold">Detection &amp;</text>
+        <text x="415" y="75" text-anchor="middle" fill="white" font-size="12">Tracking</text>
+        <text x="500" y="65" text-anchor="middle" fill="#764ba2" font-size="24">&#8594;</text>
+        <rect x="520" y="20" width="160" height="80" rx="10" fill="url(#g1)"/>
+        <text x="600" y="55" text-anchor="middle" fill="white" font-size="12" font-weight="bold">Autonomous</text>
+        <text x="600" y="75" text-anchor="middle" fill="white" font-size="12">Navigation</text>
+    </svg>
+
+    <div class="tip">
+        All code examples use Python 3, OpenCV 4.x, and ROS2 Humble. Ensure your environment is properly configured before the lab session.
+    </div>
+</div>
+
+<!-- PAGE 2: Learning Objectives & Applications -->
+<div class="page">
+    <h2>Learning Objectives &amp; Applications</h2>
+
+    <h3>Learning Objectives</h3>
+    <ul>
+        <li>Understand camera models, calibration, and projection geometry</li>
+        <li>Apply image processing and feature detection techniques to drone imagery</li>
+        <li>Implement object detection using classical and deep learning methods</li>
+        <li>Understand visual odometry, stereo vision, and optical flow</li>
+        <li>Integrate computer vision with ROS2 for autonomous drone operations</li>
+        <li>Evaluate onboard processing hardware for real-time inference</li>
+    </ul>
+
+    <h3>Why Computer Vision for Drones?</h3>
+    <div class="two-column">
+        <div>
+            <p>Drones equipped with cameras can perceive and interpret the world, enabling truly autonomous behaviour. Computer vision transforms raw pixel data into actionable information for navigation, obstacle avoidance, target tracking, and mapping.</p>
+            <ul>
+                <li><strong>GPS-denied navigation</strong> via visual odometry</li>
+                <li><strong>Obstacle avoidance</strong> using depth estimation</li>
+                <li><strong>Precision landing</strong> with marker detection</li>
+                <li><strong>Payload delivery</strong> with target identification</li>
+            </ul>
+        </div>
+        <div>
+            <div class="image-container">
+                <img src="https://images.unsplash.com/photo-1473968512647-3e447244af8f?w=400&h=300&fit=crop" alt="Drone aerial view of farmland">
+                <div class="image-caption">Figure 2.1: Aerial perspective from a drone camera</div>
+            </div>
+        </div>
+    </div>
+
+    <h3>Key Application Domains</h3>
+    <div class="three-column">
+        <div class="sensor-card">
+            <h4>Infrastructure Inspection</h4>
+            <img src="https://images.unsplash.com/photo-1558618666-fcd25c85f82e?w=300&h=200&fit=crop" alt="Bridge inspection drone">
+            <p>Crack detection, thermal analysis of buildings, power line inspection</p>
+        </div>
+        <div class="sensor-card">
+            <h4>Precision Agriculture</h4>
+            <img src="https://images.unsplash.com/photo-1574323347407-f5e1ad6d020b?w=300&h=200&fit=crop" alt="Agriculture drone">
+            <p>Crop health monitoring, NDVI mapping, weed detection, yield estimation</p>
+        </div>
+        <div class="sensor-card">
+            <h4>Search &amp; Rescue</h4>
+            <img src="https://images.unsplash.com/photo-1527977966376-1c8408f9f108?w=300&h=200&fit=crop" alt="Search and rescue drone">
+            <p>Survivor detection, thermal imaging, disaster area mapping</p>
+        </div>
+    </div>
+
+    <div class="two-column">
+        <div class="sensor-card">
+            <h4>Surveillance &amp; Security</h4>
+            <img src="https://images.unsplash.com/photo-1506947411487-a56738571f73?w=300&h=200&fit=crop" alt="Surveillance drone view">
+            <p>Perimeter monitoring, crowd analysis, anomaly detection</p>
+        </div>
+        <div class="sensor-card">
+            <h4>Delivery &amp; Logistics</h4>
+            <img src="https://images.unsplash.com/photo-1579829366248-204fe8413f31?w=300&h=200&fit=crop" alt="Delivery drone">
+            <p>Landing zone detection, package identification, obstacle-free path planning</p>
+        </div>
+    </div>
+</div>
+
+<!-- PAGE 3: Camera Models -->
+<div class="page">
+    <h2>Camera Models</h2>
+
+    <h3>The Pinhole Camera Model</h3>
+    <p>The pinhole camera model is the foundational geometric model describing how 3D world points are projected onto a 2D image plane. Light passes through a single point (the pinhole) and forms an inverted image on the sensor.</p>
+
+    <svg viewBox="0 0 700 320" style="width:100%;height:auto;" xmlns="http://www.w3.org/2000/svg">
+        <text x="350" y="20" text-anchor="middle" fill="#667eea" font-size="16" font-weight="bold">Pinhole Camera Model</text>
+        <!-- Image plane -->
+        <rect x="120" y="60" width="10" height="200" fill="#667eea" opacity="0.3"/>
+        <line x1="125" y1="60" x2="125" y2="260" stroke="#667eea" stroke-width="2"/>
+        <text x="125" y="280" text-anchor="middle" fill="#333" font-size="12">Image Plane</text>
+        <!-- Pinhole -->
+        <circle cx="300" cy="160" r="5" fill="#764ba2"/>
+        <text x="300" y="290" text-anchor="middle" fill="#333" font-size="12">Optical Centre (Pinhole)</text>
+        <!-- 3D point -->
+        <circle cx="580" cy="80" r="8" fill="#4CAF50"/>
+        <text x="580" y="70" text-anchor="middle" fill="#4CAF50" font-size="12" font-weight="bold">P(X,Y,Z)</text>
+        <!-- Projection rays -->
+        <line x1="580" y1="80" x2="300" y2="160" stroke="#999" stroke-width="1" stroke-dasharray="5,5"/>
+        <line x1="300" y1="160" x2="160" y2="210" stroke="#ff9800" stroke-width="2"/>
+        <circle cx="160" cy="210" r="5" fill="#ff9800"/>
+        <text x="160" y="230" text-anchor="middle" fill="#ff9800" font-size="11">p(u,v)</text>
+        <!-- Optical axis -->
+        <line x1="50" y1="160" x2="650" y2="160" stroke="#333" stroke-width="1" stroke-dasharray="3,3"/>
+        <text x="620" y="150" fill="#333" font-size="11">Z (optical axis)</text>
+        <!-- Focal length -->
+        <line x1="125" y1="300" x2="300" y2="300" stroke="#764ba2" stroke-width="2"/>
+        <text x="212" y="315" text-anchor="middle" fill="#764ba2" font-size="12" font-weight="bold">f (focal length)</text>
+    </svg>
+
+    <h3>Intrinsic Parameters</h3>
+    <p>The camera intrinsic matrix \(\mathbf{K}\) maps 3D camera coordinates to 2D pixel coordinates:</p>
+
+    <div class="math">
+        \[
+        \mathbf{K} = \begin{bmatrix} f_x & 0 & c_x \\ 0 & f_y & c_y \\ 0 & 0 & 1 \end{bmatrix}
+        \]
+    </div>
+
+    <p>where \(f_x, f_y\) are focal lengths in pixels, and \((c_x, c_y)\) is the principal point (image centre).</p>
+
+    <h4>Projection Equation</h4>
+    <p>A 3D point \(\mathbf{P} = (X, Y, Z)^T\) in camera coordinates projects to pixel \((u, v)\):</p>
+
+    <div class="math">
+        \[
+        s \begin{bmatrix} u \\ v \\ 1 \end{bmatrix} = \mathbf{K} \begin{bmatrix} X \\ Y \\ Z \end{bmatrix}, \quad u = f_x \frac{X}{Z} + c_x, \quad v = f_y \frac{Y}{Z} + c_y
+        \]
+    </div>
+
+    <h3>Lens Distortion</h3>
+    <p>Real lenses introduce radial and tangential distortion. The distortion coefficients are \((k_1, k_2, p_1, p_2, k_3)\):</p>
+
+    <div class="math">
+        \[
+        x' = x(1 + k_1 r^2 + k_2 r^4 + k_3 r^6) + 2p_1 xy + p_2(r^2 + 2x^2)
+        \]
+        \[
+        y' = y(1 + k_1 r^2 + k_2 r^4 + k_3 r^6) + p_1(r^2 + 2y^2) + 2p_2 xy
+        \]
+    </div>
+
+    <p>where \(r^2 = x^2 + y^2\) and \((x, y)\) are normalised image coordinates.</p>
+
+    <div class="info-box">
+        <strong>Drone Cameras:</strong> Wide-angle lenses common on drones (e.g., GoPro, DJI) exhibit significant barrel distortion. Proper calibration is essential before any vision-based estimation.
+    </div>
+</div>
+
+<!-- PAGE 4: Camera Calibration -->
+<div class="page">
+    <h2>Camera Calibration</h2>
+
+    <h3>Why Calibrate?</h3>
+    <p>Camera calibration determines the intrinsic and extrinsic parameters needed to correct lens distortion and accurately map between pixel and world coordinates. Without calibration, measurements from drone images will be inaccurate.</p>
+
+    <div class="image-container">
+        <img src="https://images.unsplash.com/photo-1555949963-ff9fe0c870eb?w=700&h=350&fit=crop" alt="Checkerboard calibration pattern">
+        <div class="image-caption">Figure 4.1: Checkerboard patterns are the standard calibration target for camera calibration</div>
+    </div>
+
+    <h3>Zhang's Calibration Method</h3>
+    <p>Zhang's method (2000) uses multiple views of a planar checkerboard pattern. For each view, the relationship between world and image points is described by a homography \(\mathbf{H}\):</p>
+
+    <div class="math">
+        \[
+        s \begin{bmatrix} u \\ v \\ 1 \end{bmatrix} = \mathbf{H} \begin{bmatrix} X \\ Y \\ 1 \end{bmatrix}, \quad \mathbf{H} = \mathbf{K} \begin{bmatrix} \mathbf{r}_1 & \mathbf{r}_2 & \mathbf{t} \end{bmatrix}
+        \]
+    </div>
+
+    <p>The method estimates \(\mathbf{K}\) by solving constraints derived from the orthonormality of the rotation columns \(\mathbf{r}_1\) and \(\mathbf{r}_2\).</p>
+
+    <h3>Calibration Workflow</h3>
+    <svg viewBox="0 0 700 200" style="width:100%;height:auto;" xmlns="http://www.w3.org/2000/svg">
+        <rect x="10" y="30" width="120" height="60" rx="8" fill="#667eea"/>
+        <text x="70" y="55" text-anchor="middle" fill="white" font-size="10" font-weight="bold">Capture 15-20</text>
+        <text x="70" y="72" text-anchor="middle" fill="white" font-size="10">checkerboard images</text>
+        <text x="145" y="65" fill="#764ba2" font-size="20">&#8594;</text>
+        <rect x="160" y="30" width="120" height="60" rx="8" fill="#667eea"/>
+        <text x="220" y="55" text-anchor="middle" fill="white" font-size="10" font-weight="bold">Detect corner</text>
+        <text x="220" y="72" text-anchor="middle" fill="white" font-size="10">points</text>
+        <text x="295" y="65" fill="#764ba2" font-size="20">&#8594;</text>
+        <rect x="310" y="30" width="120" height="60" rx="8" fill="#667eea"/>
+        <text x="370" y="55" text-anchor="middle" fill="white" font-size="10" font-weight="bold">Estimate</text>
+        <text x="370" y="72" text-anchor="middle" fill="white" font-size="10">homographies</text>
+        <text x="445" y="65" fill="#764ba2" font-size="20">&#8594;</text>
+        <rect x="460" y="30" width="120" height="60" rx="8" fill="#764ba2"/>
+        <text x="520" y="55" text-anchor="middle" fill="white" font-size="10" font-weight="bold">Solve for K</text>
+        <text x="520" y="72" text-anchor="middle" fill="white" font-size="10">&amp; distortion</text>
+        <text x="595" y="65" fill="#764ba2" font-size="20">&#8594;</text>
+        <rect x="610" y="30" width="80" height="60" rx="8" fill="#4CAF50"/>
+        <text x="650" y="55" text-anchor="middle" fill="white" font-size="10" font-weight="bold">Refine</text>
+        <text x="650" y="72" text-anchor="middle" fill="white" font-size="10">(LM opt.)</text>
+        <!-- Reprojection error feedback -->
+        <path d="M 650 95 L 650 150 L 70 150 L 70 95" stroke="#ff9800" stroke-width="2" fill="none" stroke-dasharray="5,5" marker-end="url(#arrowOrange)"/>
+        <defs><marker id="arrowOrange" markerWidth="8" markerHeight="8" refX="8" refY="4" orient="auto"><path d="M0,0 L8,4 L0,8 Z" fill="#ff9800"/></marker></defs>
+        <text x="350" y="170" text-anchor="middle" fill="#ff9800" font-size="11" font-style="italic">Minimise reprojection error (iterate if &gt; 0.5 px)</text>
+    </svg>
+
+    <h4>OpenCV Calibration Code</h4>
+    <pre>
+import cv2
+import numpy as np
+import glob
+
+# Checkerboard dimensions
+ROWS, COLS = 6, 9
+criteria = (cv2.TERM_CRITERIA_EPS + cv2.TERM_CRITERIA_MAX_ITER, 30, 0.001)
+
+objp = np.zeros((ROWS * COLS, 3), np.float32)
+objp[:, :2] = np.mgrid[0:COLS, 0:ROWS].T.reshape(-1, 2)
+
+obj_points, img_points = [], []
+
+for fname in glob.glob('calibration_images/*.jpg'):
+    img = cv2.imread(fname)
+    gray = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)
+    ret, corners = cv2.findChessboardCorners(gray, (COLS, ROWS), None)
+    if ret:
+        corners2 = cv2.cornerSubPix(gray, corners, (11, 11), (-1, -1), criteria)
+        obj_points.append(objp)
+        img_points.append(corners2)
+
+ret, K, dist, rvecs, tvecs = cv2.calibrateCamera(
+    obj_points, img_points, gray.shape[::-1], None, None)
+print(f"Camera Matrix:\n{K}\nDistortion: {dist}")
+    </pre>
+
+    <div class="warning-box">
+        <strong>Best Practice:</strong> Capture calibration images at varied angles and distances. Ensure the checkerboard fills different parts of the frame. A reprojection error below 0.5 pixels is considered good.
+    </div>
+</div>
+
+<!-- PAGE 5: Image Processing Basics -->
+<div class="page">
+    <h2>Image Processing Basics</h2>
+
+    <h3>Colour Spaces</h3>
+    <div class="two-column">
+        <div>
+            <h4>RGB (Red, Green, Blue)</h4>
+            <p>Default colour space in most cameras. Each pixel has three channels with values 0-255. Sensitive to lighting changes.</p>
+            <h4>HSV (Hue, Saturation, Value)</h4>
+            <p>Separates colour information (Hue) from brightness (Value). Much better for colour-based segmentation in varying lighting conditions common in aerial imagery.</p>
+            <h4>Grayscale</h4>
+            <p>Single-channel intensity image. Required for most feature detection and edge detection algorithms. Reduces computational cost by 3x.</p>
+        </div>
+        <div>
+            <svg viewBox="0 0 280 280" style="width:100%;height:auto;" xmlns="http://www.w3.org/2000/svg">
+                <text x="140" y="20" text-anchor="middle" fill="#667eea" font-size="14" font-weight="bold">Colour Space Conversions</text>
+                <rect x="80" y="40" width="120" height="40" rx="8" fill="#e74c3c"/>
+                <text x="140" y="65" text-anchor="middle" fill="white" font-size="13" font-weight="bold">RGB</text>
+                <line x1="100" y1="85" x2="60" y2="120" stroke="#333" stroke-width="2" marker-end="url(#arrB)"/>
+                <line x1="180" y1="85" x2="220" y2="120" stroke="#333" stroke-width="2" marker-end="url(#arrB)"/>
+                <line x1="140" y1="85" x2="140" y2="120" stroke="#333" stroke-width="2" marker-end="url(#arrB)"/>
+                <defs><marker id="arrB" markerWidth="8" markerHeight="8" refX="8" refY="4" orient="auto"><path d="M0,0 L8,4 L0,8 Z" fill="#333"/></marker></defs>
+                <rect x="10" y="125" width="100" height="40" rx="8" fill="#2ecc71"/>
+                <text x="60" y="150" text-anchor="middle" fill="white" font-size="12" font-weight="bold">HSV</text>
+                <rect x="90" y="125" width="100" height="40" rx="8" fill="#555"/>
+                <text x="140" y="150" text-anchor="middle" fill="white" font-size="12" font-weight="bold">Grayscale</text>
+                <rect x="170" y="125" width="100" height="40" rx="8" fill="#3498db"/>
+                <text x="220" y="150" text-anchor="middle" fill="white" font-size="12" font-weight="bold">LAB</text>
+                <text x="140" y="200" text-anchor="middle" fill="#333" font-size="11">cvtColor(img, cv2.COLOR_BGR2HSV)</text>
+                <text x="140" y="220" text-anchor="middle" fill="#333" font-size="11">cvtColor(img, cv2.COLOR_BGR2GRAY)</text>
+                <text x="140" y="240" text-anchor="middle" fill="#333" font-size="11">cvtColor(img, cv2.COLOR_BGR2LAB)</text>
+            </svg>
+        </div>
+    </div>
+
+    <h3>Image Filtering</h3>
+    <div class="two-column">
+        <div>
+            <h4>Gaussian Blur</h4>
+            <p>Smooths images by convolving with a Gaussian kernel. Reduces noise while preserving edges better than a box filter. Essential pre-processing step for edge detection.</p>
+            <div class="math">
+                \[ G(x,y) = \frac{1}{2\pi\sigma^2} e^{-\frac{x^2+y^2}{2\sigma^2}} \]
+            </div>
+        </div>
+        <div>
+            <h4>Median Filter</h4>
+            <p>Replaces each pixel with the median of neighbouring pixels. Excellent for removing salt-and-pepper noise common in drone camera feeds without blurring edges.</p>
+            <pre>
+blurred = cv2.GaussianBlur(img, (5,5), 1.0)
+median = cv2.medianBlur(img, 5)
+            </pre>
+        </div>
+    </div>
+
+    <h3>Edge Detection</h3>
+    <svg viewBox="0 0 700 100" style="width:100%;height:auto;" xmlns="http://www.w3.org/2000/svg">
+        <rect x="10" y="20" width="130" height="60" rx="8" fill="#667eea"/>
+        <text x="75" y="45" text-anchor="middle" fill="white" font-size="11" font-weight="bold">Grayscale Input</text>
+        <text x="75" y="62" text-anchor="middle" fill="white" font-size="10">Image</text>
+        <text x="155" y="55" fill="#764ba2" font-size="18">&#8594;</text>
+        <rect x="170" y="20" width="130" height="60" rx="8" fill="#764ba2"/>
+        <text x="235" y="45" text-anchor="middle" fill="white" font-size="11" font-weight="bold">Gaussian Blur</text>
+        <text x="235" y="62" text-anchor="middle" fill="white" font-size="10">Noise reduction</text>
+        <text x="315" y="55" fill="#764ba2" font-size="18">&#8594;</text>
+        <rect x="330" y="20" width="130" height="60" rx="8" fill="#667eea"/>
+        <text x="395" y="45" text-anchor="middle" fill="white" font-size="11" font-weight="bold">Sobel Gradients</text>
+        <text x="395" y="62" text-anchor="middle" fill="white" font-size="10">Gx, Gy</text>
+        <text x="475" y="55" fill="#764ba2" font-size="18">&#8594;</text>
+        <rect x="490" y="20" width="190" height="60" rx="8" fill="#4CAF50"/>
+        <text x="585" y="45" text-anchor="middle" fill="white" font-size="11" font-weight="bold">Canny Edge Detection</text>
+        <text x="585" y="62" text-anchor="middle" fill="white" font-size="10">NMS + Hysteresis</text>
+    </svg>
+
+    <p>The <strong>Canny edge detector</strong> is the most widely used algorithm combining gradient magnitude, non-maximum suppression, and hysteresis thresholding:</p>
+    <pre>
+edges = cv2.Canny(gray, threshold1=50, threshold2=150)
+    </pre>
+
+    <div class="image-container">
+        <img src="https://images.unsplash.com/photo-1500382017468-9049fed747ef?w=700&h=300&fit=crop" alt="Aerial landscape for processing">
+        <div class="image-caption">Figure 5.1: Aerial image suitable for edge detection and feature extraction</div>
+    </div>
+</div>
+
+<!-- PAGE 6: Feature Detection -->
+<div class="page">
+    <h2>Feature Detection</h2>
+
+    <h3>Why Features Matter for Drones</h3>
+    <p>Feature detection identifies distinctive points in images that can be reliably re-detected across frames. This is essential for visual odometry, SLAM, image stitching (panoramas), and object recognition on drones.</p>
+
+    <h3>Key Feature Detectors</h3>
+
+    <h4>Harris Corner Detector</h4>
+    <p>Detects corners by analysing the eigenvalues of the structure tensor. A corner has large gradients in two orthogonal directions.</p>
+    <div class="math">
+        \[ R = \det(\mathbf{M}) - k \cdot (\text{trace}(\mathbf{M}))^2, \quad \mathbf{M} = \sum_{(x,y) \in W} \begin{bmatrix} I_x^2 & I_x I_y \\ I_x I_y & I_y^2 \end{bmatrix} \]
+    </div>
+    <p><strong>where:</strong></p>
+    <ul>
+        <li>\( R \) — corner response score (large positive = corner)</li>
+        <li>\( \mathbf{M} \) — structure tensor (second-moment matrix)</li>
+        <li>\( I_x, I_y \) — image gradients in the \(x\) and \(y\) directions</li>
+        <li>\( W \) — local window around the pixel</li>
+        <li>\( k \) — Harris sensitivity parameter (typically 0.04-0.06)</li>
+    </ul>
+
+    <h4>FAST (Features from Accelerated Segment Test)</h4>
+    <p>Extremely fast corner detection by comparing a pixel's intensity to a ring of 16 surrounding pixels. Ideal for real-time drone applications.</p>
+
+    <h4>ORB (Oriented FAST and Rotated BRIEF)</h4>
+    <p>Combines FAST keypoint detection with a rotation-invariant BRIEF descriptor. Free to use (no patents), fast, and suitable for drones.</p>
+
+    <h3>Feature Detector Comparison</h3>
+    <table>
+        <tr><th>Detector</th><th>Speed</th><th>Rotation Invariant</th><th>Scale Invariant</th><th>Descriptor Size</th><th>Patent-Free</th></tr>
+        <tr><td>Harris</td><td>Fast</td><td>Yes</td><td>No</td><td>N/A</td><td>Yes</td></tr>
+        <tr><td>FAST</td><td>Very Fast</td><td>No</td><td>No</td><td>N/A</td><td>Yes</td></tr>
+        <tr><td>ORB</td><td>Fast</td><td>Yes</td><td>Partial</td><td>256 bits</td><td>Yes</td></tr>
+        <tr><td>SIFT</td><td>Slow</td><td>Yes</td><td>Yes</td><td>128 floats</td><td>Yes (since 2020)</td></tr>
+        <tr><td>SURF</td><td>Medium</td><td>Yes</td><td>Yes</td><td>64 floats</td><td>No</td></tr>
+    </table>
+
+    <svg viewBox="0 0 700 200" style="width:100%;height:auto;" xmlns="http://www.w3.org/2000/svg">
+        <text x="350" y="20" text-anchor="middle" fill="#667eea" font-size="14" font-weight="bold">Feature Matching Between Two Drone Frames</text>
+        <!-- Left image frame -->
+        <rect x="30" y="40" width="250" height="150" rx="5" fill="#eee" stroke="#667eea" stroke-width="2"/>
+        <text x="155" y="130" text-anchor="middle" fill="#999" font-size="12">Frame t</text>
+        <circle cx="80" cy="80" r="5" fill="#e74c3c"/><circle cx="150" cy="70" r="5" fill="#e74c3c"/>
+        <circle cx="200" cy="100" r="5" fill="#e74c3c"/><circle cx="120" cy="140" r="5" fill="#e74c3c"/>
+        <circle cx="230" cy="150" r="5" fill="#e74c3c"/>
+        <!-- Right image frame -->
+        <rect x="420" y="40" width="250" height="150" rx="5" fill="#eee" stroke="#667eea" stroke-width="2"/>
+        <text x="545" y="130" text-anchor="middle" fill="#999" font-size="12">Frame t+1</text>
+        <circle cx="470" cy="85" r="5" fill="#2ecc71"/><circle cx="540" cy="75" r="5" fill="#2ecc71"/>
+        <circle cx="590" cy="105" r="5" fill="#2ecc71"/><circle cx="510" cy="145" r="5" fill="#2ecc71"/>
+        <circle cx="620" cy="155" r="5" fill="#2ecc71"/>
+        <!-- Match lines -->
+        <line x1="80" y1="80" x2="470" y2="85" stroke="#ff9800" stroke-width="1.5" opacity="0.7"/>
+        <line x1="150" y1="70" x2="540" y2="75" stroke="#ff9800" stroke-width="1.5" opacity="0.7"/>
+        <line x1="200" y1="100" x2="590" y2="105" stroke="#ff9800" stroke-width="1.5" opacity="0.7"/>
+        <line x1="120" y1="140" x2="510" y2="145" stroke="#ff9800" stroke-width="1.5" opacity="0.7"/>
+        <line x1="230" y1="150" x2="620" y2="155" stroke="#ff9800" stroke-width="1.5" opacity="0.7"/>
+    </svg>
+
+    <div class="tip">For real-time drone applications, ORB is the recommended detector due to its speed, lack of patent restrictions, and reasonable invariance properties.</div>
+</div>
+
+<!-- PAGE 7: Feature Matching & Homography -->
+<div class="page">
+    <h2>Feature Matching &amp; Homography</h2>
+
+    <h3>Matching Strategies</h3>
+    <div class="two-column">
+        <div>
+            <h4>Brute-Force Matcher</h4>
+            <p>Compares each descriptor in the first set against all descriptors in the second set. Simple but slower for large feature sets. Use Hamming distance for binary descriptors (ORB) and L2 norm for float descriptors (SIFT).</p>
+        </div>
+        <div>
+            <h4>FLANN-Based Matcher</h4>
+            <p>Fast Library for Approximate Nearest Neighbours. Uses KD-trees or hierarchical k-means for efficient approximate matching. Significantly faster for large descriptor sets.</p>
+        </div>
+    </div>
+
+    <h4>Lowe's Ratio Test</h4>
+    <p>Filters matches by comparing the distance to the best match versus the second-best match. A match is accepted only if the ratio is below a threshold (typically 0.75):</p>
+    <pre>
+orb = cv2.ORB_create(nfeatures=1000)
+kp1, des1 = orb.detectAndCompute(img1, None)
+kp2, des2 = orb.detectAndCompute(img2, None)
+
+bf = cv2.BFMatcher(cv2.NORM_HAMMING, crossCheck=False)
+matches = bf.knnMatch(des1, des2, k=2)
+
+good = [m for m, n in matches if m.distance < 0.75 * n.distance]
+    </pre>
+
+    <h3>Homography Estimation with RANSAC</h3>
+    <p>A homography \(\mathbf{H}\) is a \(3 \times 3\) transformation matrix relating two views of a planar scene (or views from a purely rotating camera):</p>
+
+    <div class="math">
+        \[
+        \begin{bmatrix} x' \\ y' \\ 1 \end{bmatrix} \sim \mathbf{H} \begin{bmatrix} x \\ y \\ 1 \end{bmatrix} = \begin{bmatrix} h_{11} & h_{12} & h_{13} \\ h_{21} & h_{22} & h_{23} \\ h_{31} & h_{32} & h_{33} \end{bmatrix} \begin{bmatrix} x \\ y \\ 1 \end{bmatrix}
+        \]
+    </div>
+
+    <p><strong>RANSAC</strong> (Random Sample Consensus) robustly estimates the homography by iteratively sampling minimal point sets (4 correspondences), fitting a model, and finding the largest consensus set of inliers.</p>
+
+    <pre>
+if len(good) >= 4:
+    src_pts = np.float32([kp1[m.queryIdx].pt for m in good]).reshape(-1, 1, 2)
+    dst_pts = np.float32([kp2[m.trainIdx].pt for m in good]).reshape(-1, 1, 2)
+    H, mask = cv2.findHomography(src_pts, dst_pts, cv2.RANSAC, 5.0)
+    </pre>
+
+    <svg viewBox="0 0 700 140" style="width:100%;height:auto;" xmlns="http://www.w3.org/2000/svg">
+        <text x="350" y="20" text-anchor="middle" fill="#667eea" font-size="14" font-weight="bold">RANSAC Homography Pipeline</text>
+        <rect x="10" y="40" width="120" height="50" rx="8" fill="#667eea"/>
+        <text x="70" y="70" text-anchor="middle" fill="white" font-size="10" font-weight="bold">Sample 4 pairs</text>
+        <text x="145" y="70" fill="#764ba2" font-size="18">&#8594;</text>
+        <rect x="155" y="40" width="120" height="50" rx="8" fill="#667eea"/>
+        <text x="215" y="70" text-anchor="middle" fill="white" font-size="10" font-weight="bold">Compute H</text>
+        <text x="290" y="70" fill="#764ba2" font-size="18">&#8594;</text>
+        <rect x="300" y="40" width="120" height="50" rx="8" fill="#667eea"/>
+        <text x="360" y="70" text-anchor="middle" fill="white" font-size="10" font-weight="bold">Count inliers</text>
+        <text x="435" y="70" fill="#764ba2" font-size="18">&#8594;</text>
+        <rect x="445" y="40" width="120" height="50" rx="8" fill="#764ba2"/>
+        <text x="505" y="65" text-anchor="middle" fill="white" font-size="10" font-weight="bold">Best model?</text>
+        <text x="505" y="80" text-anchor="middle" fill="white" font-size="9">Update if more</text>
+        <text x="580" y="70" fill="#764ba2" font-size="18">&#8594;</text>
+        <rect x="590" y="40" width="100" height="50" rx="8" fill="#4CAF50"/>
+        <text x="640" y="70" text-anchor="middle" fill="white" font-size="10" font-weight="bold">Refine H</text>
+        <path d="M 505 95 L 505 120 L 70 120 L 70 95" stroke="#ff9800" stroke-width="1.5" fill="none" stroke-dasharray="4,4"/>
+        <text x="290" y="135" text-anchor="middle" fill="#ff9800" font-size="10">Repeat N iterations</text>
+    </svg>
+
+    <div class="activity-box">
+        <h3>Activity 1: Feature Matching Challenge</h3>
+        <p><strong>Task:</strong> Using OpenCV's ORB detector, match features between two consecutive drone frames. Apply Lowe's ratio test and estimate the homography using RANSAC.</p>
+        <ol>
+            <li>Load two aerial images (use any drone dataset or capture your own)</li>
+            <li>Detect ORB features and compute descriptors</li>
+            <li>Match with BFMatcher using knnMatch and apply ratio test (threshold 0.75)</li>
+            <li>Estimate homography with <code>cv2.findHomography()</code> using RANSAC</li>
+            <li>Warp one image onto the other and visualise the stitched result</li>
+        </ol>
+        <p><strong>Extension:</strong> Compare ORB vs SIFT matching quality. Measure computation time for each.</p>
+    </div>
+</div>
+
+<!-- PAGE 8: Object Detection Overview -->
+<div class="page">
+    <h2>Object Detection Overview</h2>
+
+    <h3>Classical vs Deep Learning Approaches</h3>
+    <div class="two-column">
+        <div>
+            <h4>Classical: HOG + SVM</h4>
+            <ul>
+                <li>Histogram of Oriented Gradients (HOG) feature extraction</li>
+                <li>Support Vector Machine classifier</li>
+                <li>Sliding window approach</li>
+                <li>Good for simple, well-defined objects</li>
+                <li>Low computational requirements</li>
+                <li>Limited to trained object classes</li>
+            </ul>
+        </div>
+        <div>
+            <h4>Deep Learning</h4>
+            <ul>
+                <li>End-to-end learned feature extraction</li>
+                <li>Far superior accuracy and generalisation</li>
+                <li>Handles occlusion and scale variation</li>
+                <li>Requires GPU for training, edge AI for inference</li>
+                <li>YOLO, SSD, Faster R-CNN families</li>
+                <li>Transfer learning enables rapid adaptation</li>
+            </ul>
+        </div>
+    </div>
+
+    <h3>CNN Object Detection Pipeline</h3>
+    <svg viewBox="0 0 700 180" style="width:100%;height:auto;" xmlns="http://www.w3.org/2000/svg">
+        <text x="350" y="20" text-anchor="middle" fill="#667eea" font-size="14" font-weight="bold">Deep Learning Detection Pipeline</text>
+        <rect x="10" y="45" width="100" height="70" rx="5" fill="#eee" stroke="#667eea" stroke-width="2"/>
+        <text x="60" y="85" text-anchor="middle" fill="#333" font-size="10">Input Image</text>
+        <text x="125" y="82" fill="#764ba2" font-size="18">&#8594;</text>
+        <rect x="140" y="45" width="120" height="70" rx="5" fill="#667eea"/>
+        <text x="200" y="75" text-anchor="middle" fill="white" font-size="10" font-weight="bold">Backbone CNN</text>
+        <text x="200" y="95" text-anchor="middle" fill="white" font-size="9">Feature Extraction</text>
+        <text x="275" y="82" fill="#764ba2" font-size="18">&#8594;</text>
+        <rect x="290" y="45" width="120" height="70" rx="5" fill="#764ba2"/>
+        <text x="350" y="75" text-anchor="middle" fill="white" font-size="10" font-weight="bold">Neck (FPN)</text>
+        <text x="350" y="95" text-anchor="middle" fill="white" font-size="9">Multi-scale features</text>
+        <text x="425" y="82" fill="#764ba2" font-size="18">&#8594;</text>
+        <rect x="440" y="45" width="120" height="70" rx="5" fill="#667eea"/>
+        <text x="500" y="75" text-anchor="middle" fill="white" font-size="10" font-weight="bold">Detection Head</text>
+        <text x="500" y="95" text-anchor="middle" fill="white" font-size="9">Boxes + Classes</text>
+        <text x="575" y="82" fill="#764ba2" font-size="18">&#8594;</text>
+        <rect x="590" y="45" width="100" height="70" rx="5" fill="#4CAF50"/>
+        <text x="640" y="75" text-anchor="middle" fill="white" font-size="10" font-weight="bold">NMS</text>
+        <text x="640" y="95" text-anchor="middle" fill="white" font-size="9">Final Detections</text>
+    </svg>
+
+    <h3>Performance Comparison</h3>
+    <table>
+        <tr><th>Model</th><th>mAP (COCO)</th><th>FPS (GPU)</th><th>FPS (Edge)</th><th>Model Size</th><th>Best For</th></tr>
+        <tr><td>HOG+SVM</td><td>~30%</td><td>10</td><td>5</td><td>~1 MB</td><td>Simple objects</td></tr>
+        <tr><td>SSD MobileNet</td><td>22.1%</td><td>60</td><td>25</td><td>~20 MB</td><td>Real-time mobile</td></tr>
+        <tr><td>YOLOv8-n</td><td>37.3%</td><td>150+</td><td>30</td><td>6 MB</td><td>Real-time drones</td></tr>
+        <tr><td>YOLOv8-s</td><td>44.9%</td><td>120+</td><td>18</td><td>22 MB</td><td>Balanced</td></tr>
+        <tr><td>Faster R-CNN</td><td>42.0%</td><td>15</td><td>3</td><td>~170 MB</td><td>High accuracy</td></tr>
+        <tr><td>YOLOv8-x</td><td>53.9%</td><td>40</td><td>5</td><td>131 MB</td><td>Max accuracy</td></tr>
+    </table>
+
+    <div class="image-container">
+        <img src="https://images.unsplash.com/photo-1523275335684-37898b6baf30?w=700&h=300&fit=crop" alt="Object detection concepts">
+        <div class="image-caption">Figure 8.1: Object detection identifies and localises objects with bounding boxes and confidence scores</div>
+    </div>
+
+    <div class="info-box">
+        <strong>Drone Consideration:</strong> For onboard inference, model size and FPS at the edge matter most. YOLOv8-nano achieves excellent speed-accuracy tradeoff on Jetson platforms.
+    </div>
+</div>
+
+<!-- PAGE 9: YOLO for Drone Applications -->
+<div class="page">
+    <h2>YOLO for Drone Applications</h2>
+
+    <h3>YOLO Architecture Overview</h3>
+    <p><strong>You Only Look Once (YOLO)</strong> is a single-stage detector that processes the entire image in one forward pass, making it ideal for real-time drone applications.</p>
+
+    <div class="image-container">
+        <img src="https://images.unsplash.com/photo-1487887235947-a955ef187fcc?w=700&h=350&fit=crop" alt="Drone in flight for detection tasks">
+        <div class="image-caption">Figure 9.1: Drones require real-time object detection at high frame rates</div>
+    </div>
+
+    <h4>Key Concepts</h4>
+    <ul>
+        <li><strong>Grid Division:</strong> Input image divided into S x S grid cells</li>
+        <li><strong>Anchor Boxes:</strong> Pre-defined bounding box shapes at multiple scales</li>
+        <li><strong>Multi-scale Detection:</strong> Predictions at 3 different scales (small, medium, large objects)</li>
+        <li><strong>Non-Maximum Suppression (NMS):</strong> Eliminates overlapping duplicate detections</li>
+    </ul>
+
+    <h3>Intersection over Union (IoU)</h3>
+    <div class="math">
+        \[
+        \text{IoU} = \frac{|B_p \cap B_{gt}|}{|B_p \cup B_{gt}|} = \frac{\text{Area of Overlap}}{\text{Area of Union}}
+        \]
+    </div>
+
+    <h3>YOLO Loss Function</h3>
+    <p>The YOLO loss combines localisation, objectness, and classification losses:</p>
+    <div class="math">
+        \[
+        \mathcal{L} = \lambda_{\text{box}} \mathcal{L}_{\text{box}} + \lambda_{\text{obj}} \mathcal{L}_{\text{obj}} + \lambda_{\text{cls}} \mathcal{L}_{\text{cls}}
+        \]
+    </div>
+    <div class="math">
+        \[
+        \mathcal{L}_{\text{box}} = 1 - \text{CIoU}(B_p, B_{gt}), \quad \text{CIoU} = \text{IoU} - \frac{\rho^2(\mathbf{b}_p, \mathbf{b}_{gt})}{c^2} - \alpha v
+        \]
+    </div>
+    <p>where \(\rho\) is the Euclidean distance between centres, \(c\) is the diagonal of the smallest enclosing box, and \(v\) measures aspect ratio consistency.</p>
+
+    <h3>Running YOLOv8 on Drone Imagery</h3>
+    <pre>
+from ultralytics import YOLO
+
+# Load pre-trained model
+model = YOLO('yolov8n.pt')  # nano model for speed
+
+# Run inference on a drone image
+results = model('aerial_image.jpg', conf=0.25, iou=0.45)
+
+# Process results
+for r in results:
+    boxes = r.boxes
+    for box in boxes:
+        cls = int(box.cls[0])
+        conf = float(box.conf[0])
+        x1, y1, x2, y2 = box.xyxy[0].tolist()
+        print(f"Class: {model.names[cls]}, Conf: {conf:.2f}")
+    </pre>
+
+    <div class="warning-box">
+        <strong>Drone-Specific Challenges:</strong> Small objects at altitude, motion blur, varying illumination, and oblique viewing angles reduce detection accuracy. Fine-tuning on aerial datasets (VisDrone, UAVDT) is recommended.
+    </div>
+</div>
+
+<!-- PAGE 10: Semantic Segmentation -->
+<div class="page">
+    <h2>Semantic Segmentation</h2>
+
+    <h3>Pixel-wise Classification</h3>
+    <p>Unlike object detection (bounding boxes), semantic segmentation classifies every pixel in the image into a category. This provides precise spatial understanding critical for terrain mapping, landing zone detection, and path planning.</p>
+
+    <div class="image-container">
+        <img src="https://images.unsplash.com/photo-1506905925346-21bda4d32df4?w=700&h=350&fit=crop" alt="Aerial terrain for segmentation">
+        <div class="image-caption">Figure 10.1: Aerial terrain where segmentation classifies each pixel as road, vegetation, water, building, etc.</div>
+    </div>
+
+    <h3>Key Architectures</h3>
+    <div class="three-column">
+        <div class="sensor-card">
+            <h4>FCN</h4>
+            <p>Fully Convolutional Network. Replaces FC layers with convolutions. First end-to-end segmentation network.</p>
+        </div>
+        <div class="sensor-card">
+            <h4>U-Net</h4>
+            <p>Encoder-decoder with skip connections. Excellent for small datasets. Popular in aerial image segmentation.</p>
+        </div>
+        <div class="sensor-card">
+            <h4>DeepLab v3+</h4>
+            <p>Atrous spatial pyramid pooling (ASPP) captures multi-scale context. State-of-the-art performance.</p>
+        </div>
+    </div>
+
+    <h3>Encoder-Decoder Architecture (U-Net)</h3>
+    <svg viewBox="0 0 700 280" style="width:100%;height:auto;" xmlns="http://www.w3.org/2000/svg">
+        <text x="350" y="20" text-anchor="middle" fill="#667eea" font-size="14" font-weight="bold">U-Net Encoder-Decoder Architecture</text>
+        <!-- Encoder blocks -->
+        <rect x="30" y="40" width="80" height="100" rx="5" fill="#667eea"/>
+        <text x="70" y="85" text-anchor="middle" fill="white" font-size="9" font-weight="bold">Conv</text>
+        <text x="70" y="100" text-anchor="middle" fill="white" font-size="8">256x256</text>
+        <rect x="130" y="60" width="80" height="80" rx="5" fill="#667eea"/>
+        <text x="170" y="95" text-anchor="middle" fill="white" font-size="9" font-weight="bold">Conv</text>
+        <text x="170" y="110" text-anchor="middle" fill="white" font-size="8">128x128</text>
+        <rect x="230" y="80" width="80" height="60" rx="5" fill="#667eea"/>
+        <text x="270" y="105" text-anchor="middle" fill="white" font-size="9" font-weight="bold">Conv</text>
+        <text x="270" y="120" text-anchor="middle" fill="white" font-size="8">64x64</text>
+        <!-- Bottleneck -->
+        <rect x="330" y="95" width="60" height="40" rx="5" fill="#764ba2"/>
+        <text x="360" y="118" text-anchor="middle" fill="white" font-size="8" font-weight="bold">Bottleneck</text>
+        <!-- Decoder blocks -->
+        <rect x="410" y="80" width="80" height="60" rx="5" fill="#4CAF50"/>
+        <text x="450" y="105" text-anchor="middle" fill="white" font-size="9" font-weight="bold">UpConv</text>
+        <text x="450" y="120" text-anchor="middle" fill="white" font-size="8">64x64</text>
+        <rect x="510" y="60" width="80" height="80" rx="5" fill="#4CAF50"/>
+        <text x="550" y="95" text-anchor="middle" fill="white" font-size="9" font-weight="bold">UpConv</text>
+        <text x="550" y="110" text-anchor="middle" fill="white" font-size="8">128x128</text>
+        <rect x="610" y="40" width="80" height="100" rx="5" fill="#4CAF50"/>
+        <text x="650" y="85" text-anchor="middle" fill="white" font-size="9" font-weight="bold">UpConv</text>
+        <text x="650" y="100" text-anchor="middle" fill="white" font-size="8">256x256</text>
+        <!-- Skip connections -->
+        <path d="M 70 40 Q 70 30 350 30 Q 650 30 650 40" stroke="#ff9800" stroke-width="2" fill="none" stroke-dasharray="5,5"/>
+        <path d="M 170 60 Q 170 50 400 50 Q 550 50 550 60" stroke="#ff9800" stroke-width="2" fill="none" stroke-dasharray="5,5"/>
+        <path d="M 270 80 Q 270 70 360 70 Q 450 70 450 80" stroke="#ff9800" stroke-width="2" fill="none" stroke-dasharray="5,5"/>
+        <text x="350" y="265" text-anchor="middle" fill="#ff9800" font-size="11">--- Skip Connections (concatenate encoder features with decoder)</text>
+        <!-- Labels -->
+        <text x="160" y="200" text-anchor="middle" fill="#667eea" font-size="12" font-weight="bold">Encoder (Downsample)</text>
+        <text x="550" y="200" text-anchor="middle" fill="#4CAF50" font-size="12" font-weight="bold">Decoder (Upsample)</text>
+    </svg>
+
+    <h3>Drone Applications</h3>
+    <ul>
+        <li><strong>Terrain Mapping:</strong> Classify ground types (road, grass, water, building, forest)</li>
+        <li><strong>Landing Zone Detection:</strong> Identify safe, flat, obstacle-free areas for autonomous landing</li>
+        <li><strong>Agricultural Analysis:</strong> Segment crop vs weed for precision spraying</li>
+        <li><strong>Disaster Assessment:</strong> Identify damaged buildings, flooded areas, debris fields</li>
+    </ul>
+
+    <div class="tip">U-Net with a MobileNetV2 backbone provides an excellent speed-accuracy tradeoff for onboard drone segmentation.</div>
+</div>
+
+<!-- PAGE 11: Visual Odometry -->
+<div class="page">
+    <h2>Visual Odometry</h2>
+
+    <h3>What is Visual Odometry?</h3>
+    <p>Visual odometry (VO) estimates the ego-motion (position and orientation) of a drone by analysing changes between consecutive camera frames. It provides position estimates in GPS-denied environments such as indoor spaces, tunnels, and urban canyons.</p>
+
+    <div class="image-container">
+        <img src="https://images.unsplash.com/photo-1524143986875-3b098d78b363?w=700&h=300&fit=crop" alt="Urban environment for visual odometry">
+        <div class="image-caption">Figure 11.1: Urban environments provide rich visual features for odometry</div>
+    </div>
+
+    <h3>Monocular vs Stereo VO</h3>
+    <div class="two-column">
+        <div class="info-box">
+            <h4>Monocular VO</h4>
+            <ul>
+                <li>Single camera - lighter, cheaper</li>
+                <li>Scale ambiguity (cannot determine absolute scale)</li>
+                <li>Requires external scale (IMU, known object size)</li>
+                <li>Fails with pure rotation</li>
+            </ul>
+        </div>
+        <div class="info-box">
+            <h4>Stereo VO</h4>
+            <ul>
+                <li>Two cameras with known baseline</li>
+                <li>Absolute scale from stereo triangulation</li>
+                <li>More robust but heavier/costlier</li>
+                <li>Limited range (depth accuracy degrades with distance)</li>
+            </ul>
+        </div>
+    </div>
+
+    <h3>Feature-Based VO Pipeline</h3>
+    <svg viewBox="0 0 700 140" style="width:100%;height:auto;" xmlns="http://www.w3.org/2000/svg">
+        <rect x="10" y="30" width="120" height="55" rx="8" fill="#667eea"/>
+        <text x="70" y="53" text-anchor="middle" fill="white" font-size="10" font-weight="bold">Detect</text>
+        <text x="70" y="68" text-anchor="middle" fill="white" font-size="9">Features (ORB)</text>
+        <text x="142" y="60" fill="#764ba2" font-size="18">&#8594;</text>
+        <rect x="155" y="30" width="120" height="55" rx="8" fill="#667eea"/>
+        <text x="215" y="53" text-anchor="middle" fill="white" font-size="10" font-weight="bold">Match</text>
+        <text x="215" y="68" text-anchor="middle" fill="white" font-size="9">Across frames</text>
+        <text x="287" y="60" fill="#764ba2" font-size="18">&#8594;</text>
+        <rect x="300" y="30" width="120" height="55" rx="8" fill="#764ba2"/>
+        <text x="360" y="53" text-anchor="middle" fill="white" font-size="10" font-weight="bold">Estimate</text>
+        <text x="360" y="68" text-anchor="middle" fill="white" font-size="9">Essential Matrix</text>
+        <text x="432" y="60" fill="#764ba2" font-size="18">&#8594;</text>
+        <rect x="445" y="30" width="120" height="55" rx="8" fill="#667eea"/>
+        <text x="505" y="53" text-anchor="middle" fill="white" font-size="10" font-weight="bold">Recover</text>
+        <text x="505" y="68" text-anchor="middle" fill="white" font-size="9">R, t (pose)</text>
+        <text x="577" y="60" fill="#764ba2" font-size="18">&#8594;</text>
+        <rect x="590" y="30" width="100" height="55" rx="8" fill="#4CAF50"/>
+        <text x="640" y="53" text-anchor="middle" fill="white" font-size="10" font-weight="bold">Optimise</text>
+        <text x="640" y="68" text-anchor="middle" fill="white" font-size="9">Bundle Adj.</text>
+    </svg>
+
+    <h3>Essential &amp; Fundamental Matrices</h3>
+    <p>The <strong>epipolar constraint</strong> relates corresponding points \(\mathbf{p}\) and \(\mathbf{p}'\) in two views:</p>
+
+    <div class="math">
+        \[
+        \mathbf{p}'^T \mathbf{E} \, \mathbf{p} = 0 \quad \text{(calibrated cameras)}
+        \]
+        \[
+        \mathbf{p}'^T \mathbf{F} \, \mathbf{p} = 0 \quad \text{(uncalibrated cameras)}
+        \]
+    </div>
+
+    <p>The essential matrix encodes the relative rotation and translation: \(\mathbf{E} = [\mathbf{t}]_\times \mathbf{R}\), where \([\mathbf{t}]_\times\) is the skew-symmetric matrix of the translation vector.</p>
+
+    <div class="math">
+        \[
+        \mathbf{F} = \mathbf{K}'^{-T} \mathbf{E} \, \mathbf{K}^{-1}
+        \]
+    </div>
+
+    <pre>
+# Estimate essential matrix and recover pose
+E, mask = cv2.findEssentialMat(pts1, pts2, K, method=cv2.RANSAC, prob=0.999, threshold=1.0)
+_, R, t, mask = cv2.recoverPose(E, pts1, pts2, K)
+    </pre>
+
+    <div class="warning-box">
+        <strong>Drift Problem:</strong> VO accumulates errors over time. Combine with IMU (VIO) or use loop closure (SLAM) to bound drift for long-duration drone flights.
+    </div>
+</div>
+
+<!-- PAGE 12: Stereo Vision & Depth Estimation -->
+<div class="page">
+    <h2>Stereo Vision &amp; Depth Estimation</h2>
+
+    <h3>Stereo Camera Geometry</h3>
+    <p>A stereo camera system uses two cameras separated by a known baseline \(b\) to triangulate depth. The depth \(Z\) is inversely proportional to the disparity \(d\) (pixel shift between left and right images).</p>
+
+    <svg viewBox="0 0 700 280" style="width:100%;height:auto;" xmlns="http://www.w3.org/2000/svg">
+        <text x="350" y="20" text-anchor="middle" fill="#667eea" font-size="14" font-weight="bold">Stereo Vision Geometry</text>
+        <!-- Left camera -->
+        <rect x="100" y="200" width="60" height="40" rx="5" fill="#667eea"/>
+        <text x="130" y="225" text-anchor="middle" fill="white" font-size="10" font-weight="bold">Left</text>
+        <!-- Right camera -->
+        <rect x="500" y="200" width="60" height="40" rx="5" fill="#667eea"/>
+        <text x="530" y="225" text-anchor="middle" fill="white" font-size="10" font-weight="bold">Right</text>
+        <!-- Baseline -->
+        <line x1="160" y1="245" x2="500" y2="245" stroke="#764ba2" stroke-width="2"/>
+        <text x="330" y="265" text-anchor="middle" fill="#764ba2" font-size="12" font-weight="bold">Baseline b</text>
+        <!-- 3D point -->
+        <circle cx="350" cy="60" r="8" fill="#4CAF50"/>
+        <text x="350" y="50" text-anchor="middle" fill="#4CAF50" font-size="12" font-weight="bold">P(X,Y,Z)</text>
+        <!-- Projection lines -->
+        <line x1="130" y1="200" x2="350" y2="68" stroke="#ff9800" stroke-width="1.5" stroke-dasharray="5,5"/>
+        <line x1="530" y1="200" x2="350" y2="68" stroke="#ff9800" stroke-width="1.5" stroke-dasharray="5,5"/>
+        <!-- Focal length -->
+        <line x1="80" y1="200" x2="80" y2="140" stroke="#333" stroke-width="1"/>
+        <text x="75" y="170" text-anchor="end" fill="#333" font-size="10">f</text>
+        <!-- Image planes -->
+        <line x1="90" y1="140" x2="170" y2="140" stroke="#667eea" stroke-width="2"/>
+        <line x1="490" y1="140" x2="570" y2="140" stroke="#667eea" stroke-width="2"/>
+        <!-- Projected points -->
+        <circle cx="140" cy="140" r="4" fill="#e74c3c"/>
+        <text x="140" y="135" text-anchor="middle" fill="#e74c3c" font-size="9">x_L</text>
+        <circle cx="520" cy="140" r="4" fill="#e74c3c"/>
+        <text x="520" y="135" text-anchor="middle" fill="#e74c3c" font-size="9">x_R</text>
+        <!-- Disparity -->
+        <text x="330" y="135" text-anchor="middle" fill="#e74c3c" font-size="11">d = x_L - x_R</text>
+    </svg>
+
+    <h3>Depth from Disparity</h3>
+    <div class="math">
+        \[
+        Z = \frac{f \cdot b}{d}, \quad d = x_L - x_R
+        \]
+    </div>
+    <p>where \(f\) is the focal length in pixels, \(b\) is the baseline in metres, and \(d\) is the disparity in pixels.</p>
+
+    <h3>Stereo Rectification</h3>
+    <p>Before computing disparity, stereo images must be rectified so that corresponding points lie on the same horizontal scanline (epipolar lines are horizontal). This simplifies the matching problem from 2D to 1D search.</p>
+
+    <h3>Disparity Computation in OpenCV</h3>
+    <pre>
+# Stereo rectification
+R1, R2, P1, P2, Q, _, _ = cv2.stereoRectify(K1, d1, K2, d2, img_size, R, T)
+map1x, map1y = cv2.initUndistortRectifyMap(K1, d1, R1, P1, img_size, cv2.CV_32F)
+map2x, map2y = cv2.initUndistortRectifyMap(K2, d2, R2, P2, img_size, cv2.CV_32F)
+
+rect_left = cv2.remap(left, map1x, map1y, cv2.INTER_LINEAR)
+rect_right = cv2.remap(right, map2x, map2y, cv2.INTER_LINEAR)
+
+# Compute disparity with SGBM
+stereo = cv2.StereoSGBM_create(minDisparity=0, numDisparities=128, blockSize=5)
+disparity = stereo.compute(rect_left, rect_right).astype(np.float32) / 16.0
+
+# Depth map
+depth = (f * baseline) / (disparity + 1e-6)
+    </pre>
+
+    <div class="activity-box">
+        <h3>Activity 2: Depth Estimation from Stereo Images</h3>
+        <p><strong>Task:</strong> Using a stereo image pair, compute the disparity map and convert it to a depth map.</p>
+        <ol>
+            <li>Load the Middlebury stereo dataset (or use provided images)</li>
+            <li>Apply stereo rectification using provided calibration parameters</li>
+            <li>Compute disparity using <code>cv2.StereoSGBM_create()</code></li>
+            <li>Convert disparity to depth using \(Z = fb/d\)</li>
+            <li>Visualise the depth map using a colour map</li>
+        </ol>
+        <p><strong>Discussion:</strong> What happens to depth accuracy at far distances? How does baseline length affect the usable range?</p>
+    </div>
+</div>
+
+<!-- PAGE 13: Optical Flow -->
+<div class="page">
+    <h2>Optical Flow</h2>
+
+    <h3>What is Optical Flow?</h3>
+    <p>Optical flow is the pattern of apparent motion of objects, surfaces, or edges in a visual scene caused by relative motion between the camera and the scene. For drones, optical flow provides velocity estimates and enables obstacle detection.</p>
+
+    <div class="image-container">
+        <img src="https://images.unsplash.com/photo-1501630834273-4b5604d2ee31?w=700&h=300&fit=crop" alt="Motion blur representing optical flow">
+        <div class="image-caption">Figure 13.1: Optical flow captures the pattern of motion in consecutive frames</div>
+    </div>
+
+    <h3>Optical Flow Constraint Equation</h3>
+    <p>The brightness constancy assumption states that pixel intensity does not change between frames:</p>
+    <div class="math">
+        \[
+        I(x, y, t) = I(x + dx, y + dy, t + dt)
+        \]
+    </div>
+    <p>Taking a Taylor expansion and dividing by \(dt\):</p>
+    <div class="math">
+        \[
+        I_x u + I_y v + I_t = 0 \quad \Rightarrow \quad \nabla I \cdot \mathbf{v} + I_t = 0
+        \]
+    </div>
+    <p>where \(u = dx/dt\), \(v = dy/dt\) are the flow components, and \(I_x, I_y, I_t\) are the spatial and temporal image gradients.</p>
+
+    <h3>Methods</h3>
+    <div class="two-column">
+        <div>
+            <h4>Lucas-Kanade (Sparse)</h4>
+            <p>Assumes constant flow in a local window. Solves an over-determined system using least squares. Fast, suitable for tracking specific feature points.</p>
+            <div class="math">
+                \[
+                \begin{bmatrix} u \\ v \end{bmatrix} = (\mathbf{A}^T \mathbf{A})^{-1} \mathbf{A}^T \mathbf{b}
+                \]
+            </div>
+            <p>where \(\mathbf{A}\) contains spatial gradients and \(\mathbf{b}\) contains temporal gradients for all pixels in the window.</p>
+        </div>
+        <div>
+            <h4>Farneback (Dense)</h4>
+            <p>Computes flow for every pixel using polynomial expansion. More computationally expensive but provides complete motion field. Useful for terrain-relative velocity estimation.</p>
+            <h4>Deep Learning: FlowNet / RAFT</h4>
+            <p>End-to-end learned optical flow. RAFT (Recurrent All-pairs Field Transforms) achieves state-of-the-art accuracy. Can handle large displacements and occlusions.</p>
+        </div>
+    </div>
+
+    <h4>OpenCV Optical Flow Example</h4>
+    <pre>
+# Sparse optical flow (Lucas-Kanade)
+lk_params = dict(winSize=(21, 21), maxLevel=3,
+    criteria=(cv2.TERM_CRITERIA_EPS | cv2.TERM_CRITERIA_COUNT, 30, 0.01))
+
+p0 = cv2.goodFeaturesToTrack(old_gray, maxCorners=200, qualityLevel=0.01,
+                              minDistance=10)
+p1, status, err = cv2.calcOpticalFlowPyrLK(old_gray, new_gray, p0, None,
+                                            **lk_params)
+
+# Dense optical flow (Farneback)
+flow = cv2.calcOpticalFlowFarneback(old_gray, new_gray, None,
+    pyr_scale=0.5, levels=3, winsize=15, iterations=3, poly_n=5,
+    poly_sigma=1.2, flags=0)
+    </pre>
+
+    <div class="info-box">
+        <strong>Drone Use Case:</strong> PX4 flight controllers use downward-facing optical flow sensors (e.g., PMW3901) for velocity estimation during low-altitude hover, replacing GPS for indoor flight.
+    </div>
+</div>
+
+<!-- PAGE 14: ArUco Markers & Landing Pads -->
+<div class="page">
+    <h2>ArUco Markers &amp; Precision Landing</h2>
+
+    <h3>What are ArUco Markers?</h3>
+    <p>ArUco markers are square fiducial markers with a unique binary pattern encoded in a black-and-white grid. They enable robust detection and 6-DOF pose estimation from a single camera image, making them ideal for drone precision landing.</p>
+
+    <div class="image-container">
+        <img src="https://images.unsplash.com/photo-1559827260-dc66d52bef19?w=700&h=300&fit=crop" alt="Landing pad marker for drones">
+        <div class="image-caption">Figure 14.1: ArUco markers serve as landing pads for precision drone landing</div>
+    </div>
+
+    <h3>Marker Coordinate System</h3>
+    <svg viewBox="0 0 700 250" style="width:100%;height:auto;" xmlns="http://www.w3.org/2000/svg">
+        <text x="350" y="20" text-anchor="middle" fill="#667eea" font-size="14" font-weight="bold">ArUco Marker Pose Estimation</text>
+        <!-- Marker -->
+        <rect x="50" y="80" width="150" height="150" fill="white" stroke="#333" stroke-width="3"/>
+        <rect x="65" y="95" width="30" height="30" fill="black"/><rect x="95" y="95" width="30" height="30" fill="white"/>
+        <rect x="125" y="95" width="30" height="30" fill="black"/><rect x="155" y="95" width="30" height="30" fill="black"/>
+        <rect x="65" y="125" width="30" height="30" fill="white"/><rect x="95" y="125" width="30" height="30" fill="black"/>
+        <rect x="125" y="125" width="30" height="30" fill="white"/><rect x="155" y="125" width="30" height="30" fill="black"/>
+        <rect x="65" y="155" width="30" height="30" fill="black"/><rect x="95" y="155" width="30" height="30" fill="white"/>
+        <rect x="125" y="155" width="30" height="30" fill="black"/><rect x="155" y="155" width="30" height="30" fill="white"/>
+        <rect x="65" y="185" width="30" height="30" fill="black"/><rect x="95" y="185" width="30" height="30" fill="black"/>
+        <rect x="125" y="185" width="30" height="30" fill="white"/><rect x="155" y="185" width="30" height="30" fill="black"/>
+        <!-- Axes on marker -->
+        <line x1="125" y1="155" x2="220" y2="155" stroke="red" stroke-width="3" marker-end="url(#arrRed)"/>
+        <text x="225" y="155" fill="red" font-size="14" font-weight="bold">X</text>
+        <line x1="125" y1="155" x2="125" y2="60" stroke="#2ecc71" stroke-width="3" marker-end="url(#arrGreen)"/>
+        <text x="125" y="55" fill="#2ecc71" font-size="14" font-weight="bold" text-anchor="middle">Y</text>
+        <circle cx="125" cy="155" r="5" fill="#3498db"/>
+        <text x="115" y="172" fill="#3498db" font-size="11" font-weight="bold">Z (out)</text>
+        <defs>
+            <marker id="arrRed" markerWidth="8" markerHeight="8" refX="8" refY="4" orient="auto"><path d="M0,0 L8,4 L0,8 Z" fill="red"/></marker>
+            <marker id="arrGreen" markerWidth="8" markerHeight="8" refX="4" refY="8" orient="auto"><path d="M0,8 L4,0 L8,8 Z" fill="#2ecc71"/></marker>
+        </defs>
+        <!-- Camera -->
+        <rect x="480" y="40" width="80" height="50" rx="5" fill="#667eea"/>
+        <text x="520" y="70" text-anchor="middle" fill="white" font-size="10" font-weight="bold">Camera</text>
+        <!-- Arrow from camera to marker -->
+        <line x1="480" y1="65" x2="230" y2="140" stroke="#333" stroke-width="1.5" stroke-dasharray="5,5"/>
+        <!-- Pose output -->
+        <rect x="400" y="140" width="280" height="90" rx="8" fill="#f0f8ff" stroke="#667eea" stroke-width="2"/>
+        <text x="540" y="165" text-anchor="middle" fill="#667eea" font-size="12" font-weight="bold">Estimated Pose</text>
+        <text x="540" y="185" text-anchor="middle" fill="#333" font-size="11">rvec: rotation (Rodrigues)</text>
+        <text x="540" y="205" text-anchor="middle" fill="#333" font-size="11">tvec: translation [x, y, z] metres</text>
+        <text x="540" y="222" text-anchor="middle" fill="#333" font-size="11">Relative pose: marker w.r.t. camera</text>
+    </svg>
+
+    <h3>ArUco Detection &amp; Pose Estimation Code</h3>
+    <pre>
+import cv2
+import cv2.aruco as aruco
+import numpy as np
+
+# Load calibration
+K = np.load('camera_matrix.npy')
+dist = np.load('dist_coeffs.npy')
+
+# Create ArUco dictionary and detector
+aruco_dict = aruco.getPredefinedDictionary(aruco.DICT_4X4_50)
+params = aruco.DetectorParameters()
+detector = aruco.ArucoDetector(aruco_dict, params)
+
+# Detect markers
+corners, ids, rejected = detector.detectMarkers(frame)
+
+if ids is not None:
+    aruco.drawDetectedMarkers(frame, corners, ids)
+    marker_length = 0.15  # 15 cm marker
+    for i in range(len(ids)):
+        rvec, tvec, _ = aruco.estimatePoseSingleMarkers(
+            corners[i], marker_length, K, dist)
+        cv2.drawFrameAxes(frame, K, dist, rvec[0], tvec[0], 0.1)
+        # tvec gives [x, y, z] of marker relative to camera
+        distance = np.linalg.norm(tvec[0])
+        print(f"Marker {ids[i][0]}: distance = {distance:.2f}m")
+    </pre>
+
+    <div class="activity-box">
+        <h3>Activity 3: ArUco Marker Precision Landing</h3>
+        <p><strong>Task:</strong> Detect an ArUco marker from a simulated downward-facing camera and compute the drone-to-marker relative position.</p>
+        <ol>
+            <li>Generate an ArUco marker using <code>aruco.generateImageMarker()</code></li>
+            <li>Print it and capture images from various heights and angles</li>
+            <li>Detect the marker and estimate its pose</li>
+            <li>Compute horizontal offset (x, y) and altitude (z) from the marker</li>
+            <li>Design a simple proportional controller to centre the drone over the marker</li>
+        </ol>
+    </div>
+</div>
+
+<!-- PAGE 15: Visual Servoing -->
+<div class="page">
+    <h2>Visual Servoing</h2>
+
+    <h3>What is Visual Servoing?</h3>
+    <p>Visual servoing uses visual feedback to control robot (drone) motion. The camera provides real-time measurements that drive the control loop, enabling tasks like target tracking, landing, and inspection without explicit path planning.</p>
+
+    <div class="two-column">
+        <div>
+            <h4>Image-Based VS (IBVS)</h4>
+            <ul>
+                <li>Control directly in image space</li>
+                <li>Error: difference between current and desired feature positions in pixels</li>
+                <li>Does not require 3D model of the scene</li>
+                <li>Robust to calibration errors</li>
+                <li>Can produce suboptimal 3D trajectories</li>
+            </ul>
+        </div>
+        <div>
+            <h4>Position-Based VS (PBVS)</h4>
+            <ul>
+                <li>Control in Cartesian space</li>
+                <li>Error: difference between current and desired 3D pose</li>
+                <li>Requires accurate camera calibration and 3D model</li>
+                <li>Produces straight-line 3D trajectories</li>
+                <li>Sensitive to calibration and modelling errors</li>
+            </ul>
+        </div>
+    </div>
+
+    <h3>IBVS Control Law</h3>
+    <p>The visual servoing control law relates camera velocity to image feature error via the interaction matrix \(\mathbf{L}\):</p>
+    <div class="math">
+        \[
+        \mathbf{e} = \mathbf{s} - \mathbf{s}^*, \quad \dot{\mathbf{s}} = \mathbf{L}_s \mathbf{v}_c
+        \]
+    </div>
+    <div class="math">
+        \[
+        \mathbf{v}_c = -\lambda \mathbf{L}_s^{+} (\mathbf{s} - \mathbf{s}^*)
+        \]
+    </div>
+    <p>where \(\mathbf{s}\) is the current feature vector, \(\mathbf{s}^*\) is the desired feature vector, \(\mathbf{L}_s^{+}\) is the pseudo-inverse of the interaction matrix, \(\lambda\) is the gain, and \(\mathbf{v}_c = (v_x, v_y, v_z, \omega_x, \omega_y, \omega_z)^T\) is the camera velocity screw.</p>
+
+    <h4>Interaction Matrix for a Point Feature</h4>
+    <p>For a point feature at normalised coordinates \((x, y)\) with depth \(Z\):</p>
+    <div class="math">
+        \[
+        \mathbf{L}_s = \begin{bmatrix} -\frac{1}{Z} & 0 & \frac{x}{Z} & xy & -(1+x^2) & y \\ 0 & -\frac{1}{Z} & \frac{y}{Z} & 1+y^2 & -xy & -x \end{bmatrix}
+        \]
+    </div>
+
+    <h3>Visual Servoing Control Loop</h3>
+    <svg viewBox="0 0 700 160" style="width:100%;height:auto;" xmlns="http://www.w3.org/2000/svg">
+        <text x="350" y="20" text-anchor="middle" fill="#667eea" font-size="14" font-weight="bold">IBVS Control Loop</text>
+        <!-- Desired features -->
+        <rect x="10" y="55" width="90" height="50" rx="8" fill="#4CAF50"/>
+        <text x="55" y="80" text-anchor="middle" fill="white" font-size="9" font-weight="bold">Desired s*</text>
+        <!-- Error computation -->
+        <circle cx="150" cy="80" r="20" fill="none" stroke="#764ba2" stroke-width="2"/>
+        <text x="150" y="85" text-anchor="middle" fill="#764ba2" font-size="16" font-weight="bold">-</text>
+        <line x1="100" y1="80" x2="130" y2="80" stroke="#333" stroke-width="2" marker-end="url(#arrB)"/>
+        <!-- Controller -->
+        <line x1="170" y1="80" x2="200" y2="80" stroke="#333" stroke-width="2" marker-end="url(#arrB)"/>
+        <rect x="200" y="55" width="110" height="50" rx="8" fill="#764ba2"/>
+        <text x="255" y="75" text-anchor="middle" fill="white" font-size="9" font-weight="bold">Controller</text>
+        <text x="255" y="90" text-anchor="middle" fill="white" font-size="8">v = -lambda L+ e</text>
+        <!-- Drone -->
+        <line x1="310" y1="80" x2="340" y2="80" stroke="#333" stroke-width="2" marker-end="url(#arrB)"/>
+        <rect x="340" y="55" width="100" height="50" rx="8" fill="#667eea"/>
+        <text x="390" y="80" text-anchor="middle" fill="white" font-size="9" font-weight="bold">Drone</text>
+        <!-- Camera -->
+        <line x1="440" y1="80" x2="470" y2="80" stroke="#333" stroke-width="2" marker-end="url(#arrB)"/>
+        <rect x="470" y="55" width="100" height="50" rx="8" fill="#667eea"/>
+        <text x="520" y="80" text-anchor="middle" fill="white" font-size="9" font-weight="bold">Camera</text>
+        <!-- Feature extraction -->
+        <line x1="570" y1="80" x2="600" y2="80" stroke="#333" stroke-width="2" marker-end="url(#arrB)"/>
+        <rect x="600" y="55" width="90" height="50" rx="8" fill="#ff9800"/>
+        <text x="645" y="75" text-anchor="middle" fill="white" font-size="9" font-weight="bold">Extract</text>
+        <text x="645" y="90" text-anchor="middle" fill="white" font-size="8">features s</text>
+        <!-- Feedback loop -->
+        <path d="M 645 110 L 645 140 L 150 140 L 150 105" stroke="#333" stroke-width="2" fill="none" marker-end="url(#arrB)"/>
+        <text x="400" y="155" text-anchor="middle" fill="#333" font-size="10" font-style="italic">Visual feedback loop</text>
+    </svg>
+
+    <div class="tip">For drone landing, a simplified IBVS uses the marker centre pixel error to generate lateral velocity commands, while altitude is controlled separately using the marker apparent size.</div>
+</div>
+
+<!-- PAGE 16: Depth Cameras & Point Clouds -->
+<div class="page">
+    <h2>Depth Cameras &amp; Point Clouds</h2>
+
+    <h3>Depth Camera Technologies</h3>
+    <div class="three-column">
+        <div class="sensor-card">
+            <h4>Intel RealSense D455</h4>
+            <img src="https://images.unsplash.com/photo-1518770660439-4636190af475?w=250&h=150&fit=crop" alt="Depth sensor technology">
+            <p><strong>Type:</strong> Active stereo<br><strong>Range:</strong> 0.6-6m<br><strong>FPS:</strong> 90<br><strong>Weight:</strong> 72g</p>
+        </div>
+        <div class="sensor-card">
+            <h4>Stereolabs ZED 2</h4>
+            <img src="https://images.unsplash.com/photo-1551288049-bebda4e38f71?w=250&h=150&fit=crop" alt="Stereo camera system">
+            <p><strong>Type:</strong> Passive stereo<br><strong>Range:</strong> 0.3-20m<br><strong>FPS:</strong> 100<br><strong>Weight:</strong> 175g</p>
+        </div>
+        <div class="sensor-card">
+            <h4>LiDAR (Livox Mid-70)</h4>
+            <img src="https://images.unsplash.com/photo-1563207153-f403bf289096?w=250&h=150&fit=crop" alt="LiDAR sensor">
+            <p><strong>Type:</strong> Time-of-flight<br><strong>Range:</strong> 0.05-260m<br><strong>FPS:</strong> 10<br><strong>Weight:</strong> 620g</p>
+        </div>
+    </div>
+
+    <h3>Point Cloud from RGBD</h3>
+    <p>Given a depth image \(D(u,v)\) and camera intrinsics \(\mathbf{K}\), each pixel can be back-projected to a 3D point:</p>
+    <div class="math">
+        \[
+        X = \frac{(u - c_x) \cdot D(u,v)}{f_x}, \quad Y = \frac{(v - c_y) \cdot D(u,v)}{f_y}, \quad Z = D(u,v)
+        \]
+    </div>
+
+    <pre>
+import open3d as o3d
+import numpy as np
+
+# Create point cloud from depth image
+depth = o3d.io.read_image("depth.png")
+color = o3d.io.read_image("color.png")
+rgbd = o3d.geometry.RGBDImage.create_from_color_and_depth(color, depth)
+
+intrinsic = o3d.camera.PinholeCameraIntrinsic(640, 480, fx, fy, cx, cy)
+pcd = o3d.geometry.PointCloud.create_from_rgbd_image(rgbd, intrinsic)
+o3d.visualization.draw_geometries([pcd])
+    </pre>
+
+    <h3>ROS2 Integration</h3>
+    <table>
+        <tr><th>Package</th><th>Purpose</th><th>Key Topics</th></tr>
+        <tr><td><code>image_transport</code></td><td>Efficient image publishing with compression</td><td><code>image_raw</code>, <code>image_compressed</code></td></tr>
+        <tr><td><code>cv_bridge</code></td><td>Convert between ROS Image and OpenCV Mat</td><td>N/A (library)</td></tr>
+        <tr><td><code>depth_image_proc</code></td><td>Process depth images, generate point clouds</td><td><code>points</code></td></tr>
+        <tr><td><code>pcl_ros</code></td><td>Point cloud processing and filtering</td><td><code>output</code></td></tr>
+        <tr><td><code>vision_msgs</code></td><td>Standard detection/segmentation messages</td><td><code>detections</code></td></tr>
+    </table>
+
+    <pre>
+# cv_bridge example: ROS2 Image -> OpenCV
+from cv_bridge import CvBridge
+import rclpy
+from sensor_msgs.msg import Image
+
+bridge = CvBridge()
+
+def image_callback(msg: Image):
+    cv_image = bridge.imgmsg_to_cv2(msg, desired_encoding='bgr8')
+    # Process with OpenCV...
+    result_msg = bridge.cv2_to_imgmsg(processed, encoding='bgr8')
+    publisher.publish(result_msg)
+    </pre>
+</div>
+
+<!-- PAGE 17: Onboard Processing -->
+<div class="page">
+    <h2>Onboard Processing &amp; Edge AI</h2>
+
+    <h3>Why Edge Processing?</h3>
+    <p>Drones must process vision data onboard for low-latency autonomy. Sending video to a ground station introduces delay (50-200ms over WiFi) that is unacceptable for obstacle avoidance and precision tasks. Edge AI hardware enables real-time inference at the edge.</p>
+
+    <div class="image-container">
+        <img src="https://images.unsplash.com/photo-1558494949-ef010cbdcc31?w=700&h=250&fit=crop" alt="Edge computing hardware">
+        <div class="image-caption">Figure 17.1: Edge AI platforms bring GPU-class inference to embedded systems</div>
+    </div>
+
+    <h3>Edge AI Hardware Comparison</h3>
+    <table>
+        <tr><th>Platform</th><th>AI Performance</th><th>Power</th><th>Weight</th><th>GPU/NPU</th><th>Price</th></tr>
+        <tr><td>Jetson Nano</td><td>472 GFLOPS</td><td>5-10W</td><td>136g</td><td>128-core Maxwell</td><td>~$150</td></tr>
+        <tr><td>Jetson Xavier NX</td><td>21 TOPS</td><td>10-20W</td><td>180g</td><td>384-core Volta + 2x NVDLA</td><td>~$400</td></tr>
+        <tr><td>Jetson Orin Nano</td><td>40 TOPS</td><td>7-15W</td><td>~150g</td><td>1024-core Ampere</td><td>~$250</td></tr>
+        <tr><td>Jetson Orin NX</td><td>100 TOPS</td><td>10-25W</td><td>~200g</td><td>1024-core Ampere + 2x NVDLA</td><td>~$600</td></tr>
+        <tr><td>Coral Edge TPU</td><td>4 TOPS</td><td>2W</td><td>~5g (USB)</td><td>Google Edge TPU</td><td>~$60</td></tr>
+        <tr><td>Hailo-8</td><td>26 TOPS</td><td>2.5W</td><td>~5g (M.2)</td><td>Custom NPU</td><td>~$100</td></tr>
+    </table>
+
+    <h3>Model Optimisation Pipeline</h3>
+    <svg viewBox="0 0 700 120" style="width:100%;height:auto;" xmlns="http://www.w3.org/2000/svg">
+        <rect x="10" y="30" width="110" height="55" rx="8" fill="#667eea"/>
+        <text x="65" y="53" text-anchor="middle" fill="white" font-size="10" font-weight="bold">PyTorch /</text>
+        <text x="65" y="68" text-anchor="middle" fill="white" font-size="10">TensorFlow</text>
+        <text x="135" y="60" fill="#764ba2" font-size="18">&#8594;</text>
+        <rect x="150" y="30" width="100" height="55" rx="8" fill="#667eea"/>
+        <text x="200" y="53" text-anchor="middle" fill="white" font-size="10" font-weight="bold">Export to</text>
+        <text x="200" y="68" text-anchor="middle" fill="white" font-size="10">ONNX</text>
+        <text x="265" y="60" fill="#764ba2" font-size="18">&#8594;</text>
+        <rect x="280" y="30" width="110" height="55" rx="8" fill="#764ba2"/>
+        <text x="335" y="53" text-anchor="middle" fill="white" font-size="10" font-weight="bold">Quantise</text>
+        <text x="335" y="68" text-anchor="middle" fill="white" font-size="9">FP32 -> FP16/INT8</text>
+        <text x="405" y="60" fill="#764ba2" font-size="18">&#8594;</text>
+        <rect x="420" y="30" width="120" height="55" rx="8" fill="#667eea"/>
+        <text x="480" y="53" text-anchor="middle" fill="white" font-size="10" font-weight="bold">TensorRT /</text>
+        <text x="480" y="68" text-anchor="middle" fill="white" font-size="10">TFLite Engine</text>
+        <text x="555" y="60" fill="#764ba2" font-size="18">&#8594;</text>
+        <rect x="570" y="30" width="120" height="55" rx="8" fill="#4CAF50"/>
+        <text x="630" y="53" text-anchor="middle" fill="white" font-size="10" font-weight="bold">Deploy on</text>
+        <text x="630" y="68" text-anchor="middle" fill="white" font-size="10">Edge Device</text>
+    </svg>
+
+    <h3>Optimisation Techniques</h3>
+    <div class="two-column">
+        <div>
+            <h4>Quantisation</h4>
+            <ul>
+                <li><strong>FP32 to FP16:</strong> 2x smaller, ~same accuracy, 2x faster on Tensor Cores</li>
+                <li><strong>FP32 to INT8:</strong> 4x smaller, slight accuracy drop, 4x faster</li>
+                <li>Post-training quantisation vs quantisation-aware training</li>
+            </ul>
+        </div>
+        <div>
+            <h4>Other Techniques</h4>
+            <ul>
+                <li><strong>Pruning:</strong> Remove redundant weights/channels</li>
+                <li><strong>Knowledge Distillation:</strong> Train small model from large teacher</li>
+                <li><strong>Architecture Search:</strong> NAS for efficient architectures</li>
+                <li><strong>TensorRT:</strong> NVIDIA's inference optimiser (layer fusion, kernel auto-tuning)</li>
+            </ul>
+        </div>
+    </div>
+
+    <pre>
+# TensorRT optimisation example
+from ultralytics import YOLO
+
+model = YOLO('yolov8n.pt')
+model.export(format='engine', half=True, device=0)  # FP16 TensorRT
+# Inference with TensorRT engine
+trt_model = YOLO('yolov8n.engine')
+results = trt_model('image.jpg')
+    </pre>
+
+    <div class="warning-box">
+        <strong>Power Budget:</strong> A typical drone battery provides 50-100Wh. Running a Jetson Orin NX at 25W gives only 2-4 hours of compute. Always benchmark power consumption alongside inference speed.
+    </div>
+</div>
+
+<!-- PAGE 18: ROS2 Vision Pipeline -->
+<div class="page">
+    <h2>ROS2 Vision Pipeline</h2>
+
+    <h3>Vision Architecture in ROS2</h3>
+    <p>ROS2 provides a mature ecosystem for vision processing on drones. The <code>image_pipeline</code> stack handles camera drivers, calibration, rectification, and processing through a standardised topic and service interface.</p>
+
+    <h3>ROS2 Vision Topic Graph</h3>
+    <svg viewBox="0 0 700 350" style="width:100%;height:auto;" xmlns="http://www.w3.org/2000/svg">
+        <text x="350" y="20" text-anchor="middle" fill="#667eea" font-size="14" font-weight="bold">ROS2 Drone Vision Pipeline</text>
+        <!-- Camera driver -->
+        <rect x="20" y="50" width="140" height="45" rx="8" fill="#667eea"/>
+        <text x="90" y="78" text-anchor="middle" fill="white" font-size="10" font-weight="bold">Camera Driver</text>
+        <!-- Topics from camera -->
+        <line x1="160" y1="65" x2="220" y2="45" stroke="#333" stroke-width="1.5" marker-end="url(#arrB)"/>
+        <line x1="160" y1="78" x2="220" y2="78" stroke="#333" stroke-width="1.5" marker-end="url(#arrB)"/>
+        <line x1="160" y1="85" x2="220" y2="110" stroke="#333" stroke-width="1.5" marker-end="url(#arrB)"/>
+        <rect x="220" y="30" width="150" height="30" rx="5" fill="#eee" stroke="#667eea" stroke-width="1"/>
+        <text x="295" y="50" text-anchor="middle" fill="#333" font-size="9">/camera/image_raw</text>
+        <rect x="220" y="65" width="150" height="30" rx="5" fill="#eee" stroke="#667eea" stroke-width="1"/>
+        <text x="295" y="85" text-anchor="middle" fill="#333" font-size="9">/camera/camera_info</text>
+        <rect x="220" y="100" width="150" height="30" rx="5" fill="#eee" stroke="#667eea" stroke-width="1"/>
+        <text x="295" y="120" text-anchor="middle" fill="#333" font-size="9">/camera/depth/image_raw</text>
+        <!-- Rectification node -->
+        <rect x="420" y="35" width="130" height="40" rx="8" fill="#764ba2"/>
+        <text x="485" y="60" text-anchor="middle" fill="white" font-size="10" font-weight="bold">image_proc</text>
+        <line x1="370" y1="45" x2="420" y2="55" stroke="#333" stroke-width="1.5" marker-end="url(#arrB)"/>
+        <line x1="370" y1="80" x2="420" y2="60" stroke="#333" stroke-width="1.5" marker-end="url(#arrB)"/>
+        <!-- Rectified output -->
+        <line x1="550" y1="55" x2="610" y2="55" stroke="#333" stroke-width="1.5" marker-end="url(#arrB)"/>
+        <rect x="560" y="35" width="130" height="30" rx="5" fill="#eee" stroke="#764ba2" stroke-width="1"/>
+        <text x="625" y="55" text-anchor="middle" fill="#333" font-size="9">/image_rect</text>
+
+        <!-- Detection node -->
+        <rect x="250" y="170" width="140" height="45" rx="8" fill="#4CAF50"/>
+        <text x="320" y="198" text-anchor="middle" fill="white" font-size="10" font-weight="bold">YOLO Detector</text>
+        <line x1="295" y1="135" x2="310" y2="170" stroke="#333" stroke-width="1.5" marker-end="url(#arrB)"/>
+        <!-- Detection output -->
+        <line x1="390" y1="192" x2="450" y2="192" stroke="#333" stroke-width="1.5" marker-end="url(#arrB)"/>
+        <rect x="450" y="177" width="160" height="30" rx="5" fill="#eee" stroke="#4CAF50" stroke-width="1"/>
+        <text x="530" y="197" text-anchor="middle" fill="#333" font-size="9">/detections (vision_msgs)</text>
+
+        <!-- Point cloud node -->
+        <rect x="250" y="240" width="140" height="45" rx="8" fill="#ff9800"/>
+        <text x="320" y="260" text-anchor="middle" fill="white" font-size="10" font-weight="bold">depth_image_proc</text>
+        <text x="320" y="275" text-anchor="middle" fill="white" font-size="9">point_cloud_xyzrgb</text>
+        <line x1="295" y1="135" x2="310" y2="240" stroke="#333" stroke-width="1.5" marker-end="url(#arrB)"/>
+        <!-- Point cloud output -->
+        <line x1="390" y1="262" x2="450" y2="262" stroke="#333" stroke-width="1.5" marker-end="url(#arrB)"/>
+        <rect x="450" y="247" width="160" height="30" rx="5" fill="#eee" stroke="#ff9800" stroke-width="1"/>
+        <text x="530" y="267" text-anchor="middle" fill="#333" font-size="9">/points (PointCloud2)</text>
+
+        <!-- Visual Odometry -->
+        <rect x="250" y="310" width="140" height="40" rx="8" fill="#e74c3c"/>
+        <text x="320" y="335" text-anchor="middle" fill="white" font-size="10" font-weight="bold">Visual Odometry</text>
+        <line x1="560" y1="65" x2="350" y2="310" stroke="#333" stroke-width="1" stroke-dasharray="4,4"/>
+        <line x1="390" y1="330" x2="450" y2="330" stroke="#333" stroke-width="1.5" marker-end="url(#arrB)"/>
+        <rect x="450" y="315" width="160" height="30" rx="5" fill="#eee" stroke="#e74c3c" stroke-width="1"/>
+        <text x="530" y="335" text-anchor="middle" fill="#333" font-size="9">/odom (nav_msgs/Odometry)</text>
+    </svg>
+
+    <h3>ROS2 Launch File Example</h3>
+    <pre>
+from launch import LaunchDescription
+from launch_ros.actions import Node, ComposableNodeContainer
+from launch_ros.descriptions import ComposableNode
+
+def generate_launch_description():
+    return LaunchDescription([
+        # Camera driver
+        Node(
+            package='usb_cam', executable='usb_cam_node_exe',
+            parameters=[{'video_device': '/dev/video0',
+                         'framerate': 30.0,
+                         'image_width': 640, 'image_height': 480}],
+        ),
+        # Image rectification
+        Node(
+            package='image_proc', executable='rectify_node',
+            remappings=[('image', '/camera/image_raw'),
+                        ('camera_info', '/camera/camera_info')],
+        ),
+        # YOLO detection node
+        Node(
+            package='yolo_ros', executable='yolo_node',
+            parameters=[{'model': 'yolov8n.engine',
+                         'conf_threshold': 0.25,
+                         'device': 'cuda:0'}],
+            remappings=[('image', '/image_rect')],
+        ),
+    ])
+    </pre>
+
+    <div class="activity-box">
+        <h3>Activity 4: Build a ROS2 Vision Node</h3>
+        <p><strong>Task:</strong> Create a ROS2 Python node that subscribes to a camera topic, detects ArUco markers using OpenCV, and publishes the detected pose as a <code>geometry_msgs/PoseStamped</code> message.</p>
+        <ol>
+            <li>Create a ROS2 package <code>drone_vision</code></li>
+            <li>Write a node that subscribes to <code>/camera/image_raw</code></li>
+            <li>Use <code>cv_bridge</code> to convert ROS Image to OpenCV</li>
+            <li>Detect ArUco markers and estimate poses</li>
+            <li>Publish detected marker pose on <code>/marker_pose</code></li>
+            <li>Test with <code>usb_cam</code> or <code>image_publisher</code></li>
+        </ol>
+    </div>
+</div>
+
+<!-- PAGE 19: Summary & Lab Preview -->
+<div class="page">
+    <h2>Summary &amp; Lab Preview</h2>
+
+    <h3>Key Takeaways</h3>
+    <div class="checklist">
+        <ul>
+            <li>The pinhole camera model and intrinsic matrix K are fundamental to all vision-based estimation</li>
+            <li>Camera calibration removes lens distortion and provides accurate projection parameters</li>
+            <li>ORB features provide the best speed-accuracy tradeoff for real-time drone applications</li>
+            <li>YOLO is the preferred object detection framework for onboard drone inference</li>
+            <li>Visual odometry enables GPS-denied navigation using feature tracking across frames</li>
+            <li>Stereo vision provides metric depth estimation using known camera baseline</li>
+            <li>ArUco markers enable robust 6-DOF pose estimation for precision landing</li>
+            <li>Visual servoing closes the loop between vision and control</li>
+            <li>Edge AI hardware (Jetson Orin, Coral TPU) is essential for onboard real-time inference</li>
+            <li>ROS2 provides image_transport, cv_bridge, and vision_msgs for standardised vision pipelines</li>
+        </ul>
+    </div>
+
+    <h3>Key Equations Reference</h3>
+    <table>
+        <tr><th>Concept</th><th>Equation</th></tr>
+        <tr><td>Projection</td><td>\(u = f_x \frac{X}{Z} + c_x\)</td></tr>
+        <tr><td>Depth from Disparity</td><td>\(Z = \frac{fb}{d}\)</td></tr>
+        <tr><td>Epipolar Constraint</td><td>\(\mathbf{p}'^T \mathbf{E} \, \mathbf{p} = 0\)</td></tr>
+        <tr><td>Optical Flow</td><td>\(I_x u + I_y v + I_t = 0\)</td></tr>
+        <tr><td>Visual Servoing</td><td>\(\mathbf{v}_c = -\lambda \mathbf{L}_s^{+} \mathbf{e}\)</td></tr>
+        <tr><td>IoU</td><td>\(\text{IoU} = \frac{|B_p \cap B_{gt}|}{|B_p \cup B_{gt}|}\)</td></tr>
+    </table>
+
+    <h3>Lab Preview: Week 10 (7 Tasks)</h3>
+    <div class="info-box">
+        <ol>
+            <li><strong>Task 1:</strong> Camera Calibration - Calibrate a camera using checkerboard images and evaluate reprojection error</li>
+            <li><strong>Task 2:</strong> Feature Detection &amp; Matching - Compare ORB, SIFT, and FAST on aerial imagery</li>
+            <li><strong>Task 3:</strong> Object Detection with YOLOv8 - Run YOLOv8-nano on drone footage and measure FPS</li>
+            <li><strong>Task 4:</strong> Stereo Depth Estimation - Compute depth maps from stereo image pairs</li>
+            <li><strong>Task 5:</strong> ArUco Marker Detection - Detect markers and estimate 6-DOF pose</li>
+            <li><strong>Task 6:</strong> Optical Flow Velocity Estimation - Estimate drone velocity from optical flow</li>
+            <li><strong>Task 7:</strong> ROS2 Vision Node - Build a complete vision pipeline node with cv_bridge</li>
+        </ol>
+    </div>
+
+    <h3>Interview Questions</h3>
+    <div class="example-box">
+        <ol>
+            <li>Explain the pinhole camera model and the role of the intrinsic matrix.</li>
+            <li>Why is ORB preferred over SIFT for real-time drone applications?</li>
+            <li>How does RANSAC improve homography estimation over a direct least-squares fit?</li>
+            <li>Compare YOLO and Faster R-CNN in terms of architecture and performance tradeoffs.</li>
+            <li>What is the epipolar constraint and how is it used in visual odometry?</li>
+            <li>How does stereo vision compute depth, and what limits its accuracy at long range?</li>
+            <li>Describe the IBVS control law and the role of the interaction matrix.</li>
+            <li>What optimisation techniques are used to deploy neural networks on edge devices like Jetson Orin?</li>
+            <li>How does optical flow help a drone estimate its velocity without GPS?</li>
+            <li>Explain the role of cv_bridge and image_transport in a ROS2 vision pipeline.</li>
+        </ol>
+    </div>
+
+    <div class="header" style="margin-top:20px;">
+        <h1>End of Week 10 Lecture</h1>
+        <p>Next Week: Week 11 -- Control Systems: PID to MPC</p>
+        <p>Dr. Abdul Manan Khan | University of West London</p>
+    </div>
+</div>
+
+</body>
+</html>

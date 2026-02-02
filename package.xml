@@ -1,0 +1,28 @@
+<?xml version="1.0"?>
+<?xml-model href="http://download.ros.org/schema/package_format3.xsd" schematypens="http://www.w3.org/2001/XMLSchema"?>
+<package format="3">
+  <name>ros2_robotics_course</name>
+  <version>1.0.0</version>
+  <description>ROS2 Robotics Course - Metapackage for all weekly modules</description>
+  <maintainer email="abdul.khan@example.com">Dr. Abdul Manan Khan</maintainer>
+  <license>Apache-2.0</license>
+
+  <buildtool_depend>ament_python</buildtool_depend>
+
+  <exec_depend>week_01_lidar_processing</exec_depend>
+  <exec_depend>week_02_sensor_fusion</exec_depend>
+  <exec_depend>week_03_ros2_fundamentals</exec_depend>
+  <exec_depend>week_04_slam_2d</exec_depend>
+  <exec_depend>week_05_nav2</exec_depend>
+  <exec_depend>week_06_quadrotor_dynamics</exec_depend>
+  <exec_depend>week_07_px4_integration</exec_depend>
+  <exec_depend>week_08_3d_path_planning</exec_depend>
+  <exec_depend>week_09_ego_planner</exec_depend>
+  <exec_depend>week_10_computer_vision</exec_depend>
+  <exec_depend>week_11_control_systems</exec_depend>
+  <exec_depend>week_12_capstone</exec_depend>
+
+  <export>
+    <build_type>ament_python</build_type>
+  </export>
+</package>

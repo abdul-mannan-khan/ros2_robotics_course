@@ -1,0 +1,11 @@
+# Week 3: ROS2 Fundamentals Parameters
+obstacle_detector_node:
+  ros__parameters:
+    num_sectors: 4
+    warning_distance: 0.5
+
+reactive_controller_node:
+  ros__parameters:
+    min_distance: 0.3
+    linear_speed: 0.2
+    angular_speed: 0.5

@@ -1,0 +1,38 @@
+rosbag2_bagfile_information:
+  version: 9
+  storage_identifier: sqlite3
+  duration:
+    nanoseconds: 19995000000
+  starting_time:
+    nanoseconds_since_epoch: 0
+  message_count: 4200
+  topics_with_message_count:
+    - topic_metadata:
+        name: /leica/position
+        type: geometry_msgs/msg/PoseStamped
+        serialization_format: cdr
+        offered_qos_profiles:
+          []
+        type_description_hash: ""
+      message_count: 200
+    - topic_metadata:
+        name: /imu0
+        type: sensor_msgs/msg/Imu
+        serialization_format: cdr
+        offered_qos_profiles:
+          []
+        type_description_hash: ""
+      message_count: 4000
+  compression_format: ""
+  compression_mode: ""
+  relative_file_paths:
+    - synthetic_euroc_0.db3
+  files:
+    - path: synthetic_euroc_0.db3
+      starting_time:
+        nanoseconds_since_epoch: 0
+      duration:
+        nanoseconds: 19995000000
+      message_count: 4200
+  custom_data: ~
+  ros_distro: jazzy

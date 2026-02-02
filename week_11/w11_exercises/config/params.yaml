@@ -1,0 +1,32 @@
+# Week 11: Control Systems Parameters
+pid_position_controller_node:
+  ros__parameters:
+    kp_x: 2.0
+    kp_y: 2.0
+    kp_z: 4.0
+    ki_x: 0.1
+    ki_y: 0.1
+    ki_z: 0.2
+    kd_x: 0.5
+    kd_y: 0.5
+    kd_z: 1.0
+    max_thrust: 20.0
+    output_limits: 10.0
+
+lqr_controller_node:
+  ros__parameters:
+    Q_diag: [10.0, 10.0, 20.0, 1.0, 1.0, 1.0]
+    R_diag: [1.0, 1.0, 1.0]
+    hover_thrust: 9.81
+    dt: 0.02
+    mass: 1.0
+
+mpc_controller_node:
+  ros__parameters:
+    horizon_N: 10
+    dt: 0.1
+    Q_diag: [10.0, 10.0, 20.0, 1.0, 1.0, 1.0]
+    R_diag: [0.1, 0.1, 0.1]
+    u_min: -5.0
+    u_max: 15.0
+    mass: 1.0

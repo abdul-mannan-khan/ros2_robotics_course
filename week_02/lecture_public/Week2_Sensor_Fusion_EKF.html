@@ -1,0 +1,1490 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Robotics & Drone Engineering Week 2: Sensor Fusion with Extended Kalman Filter</title>
+    <style>
+        @page {
+            size: A4;
+            margin: 2cm;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            line-height: 1.6;
+            color: #333;
+            background: #f5f5f5;
+        }
+
+        .page {
+            width: 21cm;
+            min-height: 29.7cm;
+            padding: 2cm;
+            margin: 20px auto;
+            background: white;
+            box-shadow: 0 0 10px rgba(0,0,0,0.1);
+            page-break-after: always;
+        }
+
+        .header {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 30px;
+            text-align: center;
+            border-radius: 10px;
+            margin-bottom: 30px;
+        }
+
+        .header h1 {
+            font-size: 2.5em;
+            margin-bottom: 10px;
+        }
+
+        .header p {
+            font-size: 1.2em;
+            opacity: 0.9;
+        }
+
+        h2 {
+            color: #667eea;
+            border-bottom: 3px solid #764ba2;
+            padding-bottom: 10px;
+            margin: 30px 0 20px 0;
+            font-size: 1.8em;
+        }
+
+        h3 {
+            color: #764ba2;
+            margin: 25px 0 15px 0;
+            font-size: 1.4em;
+        }
+
+        h4 {
+            color: #667eea;
+            margin: 20px 0 10px 0;
+            font-size: 1.2em;
+        }
+
+        .info-box {
+            background: #e8f4f8;
+            border-left: 5px solid #667eea;
+            padding: 20px;
+            margin: 20px 0;
+            border-radius: 5px;
+        }
+
+        .warning-box {
+            background: #fff4e6;
+            border-left: 5px solid #ff9800;
+            padding: 20px;
+            margin: 20px 0;
+            border-radius: 5px;
+        }
+
+        .activity-box {
+            background: #f0f8ff;
+            border: 3px solid #4CAF50;
+            padding: 25px;
+            margin: 30px 0;
+            border-radius: 10px;
+        }
+
+        .activity-box h3 {
+            color: #4CAF50;
+            margin-top: 0;
+        }
+
+        .image-container {
+            text-align: center;
+            margin: 30px 0;
+        }
+
+        .image-container img {
+            max-width: 100%;
+            height: auto;
+            border-radius: 10px;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+        }
+
+        .image-caption {
+            font-style: italic;
+            color: #666;
+            margin-top: 10px;
+            font-size: 0.9em;
+        }
+
+        ul, ol {
+            margin: 15px 0 15px 30px;
+        }
+
+        li {
+            margin: 8px 0;
+        }
+
+        .two-column {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
+            margin: 20px 0;
+        }
+
+        .two-column > * {
+            min-width: 0;
+            overflow: hidden;
+        }
+
+        .three-column {
+            display: grid;
+            grid-template-columns: 1fr 1fr 1fr;
+            gap: 15px;
+            margin: 20px 0;
+        }
+
+        .three-column > * {
+            min-width: 0;
+            overflow: hidden;
+        }
+
+        .checklist {
+            background: #f9f9f9;
+            padding: 20px;
+            border-radius: 8px;
+            margin: 20px 0;
+        }
+
+        .checklist li {
+            list-style: none;
+            padding: 8px 0;
+        }
+
+        .checklist li:before {
+            content: "\2713 ";
+            color: #4CAF50;
+            font-weight: bold;
+            margin-right: 10px;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 20px 0;
+            table-layout: fixed;
+            word-wrap: break-word;
+        }
+
+        th, td {
+            border: 1px solid #ddd;
+            padding: 12px;
+            text-align: left;
+        }
+
+        th {
+            background: #667eea;
+            color: white;
+        }
+
+        tr:nth-child(even) {
+            background: #f9f9f9;
+        }
+
+        .diagram {
+            border: 2px solid #667eea;
+            border-radius: 10px;
+            padding: 20px;
+            margin: 20px 0;
+            background: white;
+        }
+
+        .flow-step {
+            background: #667eea;
+            color: white;
+            padding: 15px;
+            margin: 10px 0;
+            border-radius: 8px;
+            text-align: center;
+            font-weight: bold;
+        }
+
+        .arrow {
+            text-align: center;
+            font-size: 2em;
+            color: #764ba2;
+            margin: 5px 0;
+        }
+
+        .tip {
+            background: #fffbea;
+            border-left: 5px solid #ffd700;
+            padding: 15px;
+            margin: 15px 0;
+            border-radius: 5px;
+        }
+
+        .tip:before {
+            content: "\1F4A1 TIP: ";
+            font-weight: bold;
+            color: #ff9800;
+        }
+
+        code {
+            background: #f4f4f4;
+            padding: 2px 6px;
+            border-radius: 3px;
+            font-family: 'Courier New', monospace;
+            word-break: break-all;
+        }
+
+        img {
+            max-width: 100%;
+            height: auto;
+        }
+
+        svg {
+            max-width: 100%;
+            height: auto;
+        }
+
+        pre {
+            background: #1e1e1e;
+            color: #d4d4d4;
+            padding: 20px;
+            border-radius: 8px;
+            overflow-x: auto;
+            max-width: 100%;
+            white-space: pre-wrap;
+            word-wrap: break-word;
+            margin: 15px 0;
+            font-family: 'Courier New', monospace;
+            font-size: 0.9em;
+            line-height: 1.5;
+        }
+
+        .example-box {
+            background: #f0fff0;
+            border: 2px dashed #4CAF50;
+            padding: 20px;
+            margin: 20px 0;
+            border-radius: 8px;
+        }
+
+        .footer {
+            text-align: center;
+            color: #666;
+            padding: 20px;
+            margin-top: 30px;
+            border-top: 2px solid #eee;
+        }
+
+        .math {
+            background: #f8f8ff;
+            border: 1px solid #667eea;
+            padding: 15px;
+            margin: 15px 0;
+            border-radius: 5px;
+            text-align: center;
+            font-size: 1.1em;
+            overflow-x: auto;
+        }
+
+        .matrix {
+            display: inline-block;
+            border-left: 2px solid #333;
+            border-right: 2px solid #333;
+            padding: 5px 10px;
+            margin: 5px;
+            font-family: 'Courier New', monospace;
+        }
+
+        .sensor-card {
+            background: white;
+            border: 2px solid #667eea;
+            border-radius: 10px;
+            padding: 15px;
+            text-align: center;
+        }
+
+        .sensor-card img {
+            width: 100%;
+            height: 140px;
+            object-fit: cover;
+            border-radius: 8px;
+            margin-bottom: 10px;
+        }
+
+        .sensor-card h4 {
+            margin: 5px 0;
+        }
+
+        @media print {
+            body {
+                background: white;
+            }
+            .page {
+                margin: 0;
+                box-shadow: none;
+            }
+        }
+    </style>
+    <script>
+        MathJax = {
+            tex: {
+                inlineMath: [['\\(', '\\)']],
+                displayMath: [['\\[', '\\]']]
+            },
+            svg: { fontCache: 'global' }
+        };
+    </script>
+    <script src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-svg.js" async></script>
+</head>
+<body>
+
+<!-- ============================================================ -->
+<!-- PAGE 1: TITLE AND INTRODUCTION -->
+<!-- ============================================================ -->
+<div class="page">
+    <div class="header">
+        <h1>Week 2: Sensor Fusion with Extended Kalman Filter</h1>
+        <h2 style="color: white; border: none; margin: 20px 0;">Multi-Sensor Localisation for Mobile Robots &amp; Drones</h2>
+        <p>ndash; M.Sc. Control &amp; Automation</p>
+        <p>Dr. Abdul Manan Khan</p>
+        <p>Duration: 4 Hours | Category: STATE ESTIMATION | Priority: CRITICAL</p>
+    </div>
+
+    <div class="image-container">
+        <img src="https://images.unsplash.com/photo-1561557944-6e7860d1a7eb?w=800" alt="Robot Navigation Sensor Fusion">
+        <p class="image-caption">Autonomous systems combine multiple sensors to achieve accurate and reliable state estimation</p>
+    </div>
+
+    <h2>Lecture Overview</h2>
+    <div class="info-box">
+        <h3>Learning Objectives</h3>
+        <p>By the end of this lecture, you will be able to:</p>
+        <ul>
+            <li>Understand the fundamentals of Bayesian state estimation</li>
+            <li>Derive and implement the Kalman Filter predict and update steps</li>
+            <li>Extend the Kalman Filter to nonlinear systems (EKF)</li>
+            <li>Compute Jacobian matrices for common motion and sensor models</li>
+            <li>Fuse asynchronous sensor data (IMU at 100Hz, encoders at 50Hz, GPS at 1Hz)</li>
+            <li>Tune process noise (Q) and measurement noise (R) covariance matrices</li>
+            <li>Evaluate estimation performance with RMSE against ground truth</li>
+        </ul>
+    </div>
+
+    <h3>Session Structure</h3>
+    <table>
+        <tr>
+            <th>Time</th>
+            <th>Topic</th>
+            <th>Duration</th>
+        </tr>
+        <tr>
+            <td>0:00 &ndash; 0:50</td>
+            <td>Why Sensor Fusion? &amp; Kalman Filter Fundamentals</td>
+            <td>50 min</td>
+        </tr>
+        <tr>
+            <td>0:50 &ndash; 1:40</td>
+            <td>Extended Kalman Filter &amp; Jacobian Derivation</td>
+            <td>50 min</td>
+        </tr>
+        <tr>
+            <td>1:40 &ndash; 1:55</td>
+            <td>BREAK</td>
+            <td>15 min</td>
+        </tr>
+        <tr>
+            <td>1:55 &ndash; 2:45</td>
+            <td>Multi-Sensor Fusion &amp; Covariance Tuning</td>
+            <td>50 min</td>
+        </tr>
+        <tr>
+            <td>2:45 &ndash; 4:00</td>
+            <td>Hands-On Lab: EKF Implementation</td>
+            <td>75 min</td>
+        </tr>
+    </table>
+
+    <div class="warning-box">
+        <h4>Target Companies</h4>
+        <p><strong>Amazon Robotics</strong> | <strong>Tesla</strong> | <strong>Skydio</strong> | <strong>DJI</strong> | <strong>Zipline</strong></p>
+        <p>State estimation is asked in almost every robotics interview. Understanding EKF is non-negotiable.</p>
+    </div>
+</div>
+
+<!-- ============================================================ -->
+<!-- PAGE 2: WHY SENSOR FUSION -->
+<!-- ============================================================ -->
+<div class="page">
+    <h2>Part 1: Why Sensor Fusion? (50 minutes)</h2>
+
+    <h3>The Problem: No Single Sensor is Perfect</h3>
+
+    <div class="image-container">
+        <img src="https://images.unsplash.com/photo-1518314916381-77a37c2a49ae?w=800" alt="Self-Driving Car Sensors">
+        <p class="image-caption">Modern autonomous vehicles use a suite of sensors &mdash; each with distinct strengths and weaknesses</p>
+    </div>
+
+    <p>Every sensor has limitations: noise, drift, dropouts, limited range, or low update rates. <strong>Sensor fusion</strong> combines multiple imperfect measurements to produce a more accurate and robust estimate than any single sensor alone.</p>
+
+    <h3>Common Sensors in Robotics</h3>
+
+    <div class="three-column">
+        <div class="sensor-card">
+            <img src="https://images.unsplash.com/photo-1635070041078-e363dbe005cb?w=400" alt="IMU Sensor">
+            <h4>IMU</h4>
+            <p><strong>Rate:</strong> 100&ndash;1000 Hz</p>
+            <p><strong>Measures:</strong> Acceleration, angular velocity</p>
+            <p style="color:#c62828"><strong>Issue:</strong> Drift over time</p>
+        </div>
+        <div class="sensor-card">
+            <img src="https://images.unsplash.com/photo-1580820267682-426da823b514?w=400" alt="Wheel Encoders">
+            <h4>Wheel Encoders</h4>
+            <p><strong>Rate:</strong> 50&ndash;200 Hz</p>
+            <p><strong>Measures:</strong> Wheel rotation, velocity</p>
+            <p style="color:#c62828"><strong>Issue:</strong> Slip, cumulative error</p>
+        </div>
+        <div class="sensor-card">
+            <img src="https://images.unsplash.com/photo-1541411438265-4cb4687110f2?w=400" alt="GPS Satellite">
+            <h4>GPS</h4>
+            <p><strong>Rate:</strong> 1&ndash;10 Hz</p>
+            <p><strong>Measures:</strong> Global position</p>
+            <p style="color:#c62828"><strong>Issue:</strong> Noisy, dropouts indoors</p>
+        </div>
+    </div>
+
+    <div class="image-container">
+        <svg width="680" height="240" viewBox="0 0 680 240" style="max-width: 100%;">
+            <text x="340" y="25" text-anchor="middle" font-size="18" font-weight="bold" fill="#667eea">Sensor Fusion: Combining Strengths</text>
+
+            <!-- IMU box -->
+            <rect x="20" y="50" width="150" height="70" fill="#e53935" rx="10"/>
+            <text x="95" y="80" text-anchor="middle" fill="white" font-size="14" font-weight="bold">IMU (100Hz)</text>
+            <text x="95" y="100" text-anchor="middle" fill="white" font-size="12">Fast but drifts</text>
+
+            <!-- Encoder box -->
+            <rect x="20" y="145" width="150" height="70" fill="#1e88e5" rx="10"/>
+            <text x="95" y="175" text-anchor="middle" fill="white" font-size="14" font-weight="bold">Encoders (50Hz)</text>
+            <text x="95" y="195" text-anchor="middle" fill="white" font-size="12">Moderate, slips</text>
+
+            <!-- GPS box -->
+            <rect x="510" y="50" width="150" height="70" fill="#43a047" rx="10"/>
+            <text x="585" y="80" text-anchor="middle" fill="white" font-size="14" font-weight="bold">GPS (1Hz)</text>
+            <text x="585" y="100" text-anchor="middle" fill="white" font-size="12">Absolute, noisy</text>
+
+            <!-- EKF center -->
+            <rect x="240" y="80" width="200" height="100" fill="linear-gradient(135deg, #667eea, #764ba2)" rx="15"/>
+            <rect x="240" y="80" width="200" height="100" fill="#667eea" rx="15"/>
+            <text x="340" y="120" text-anchor="middle" fill="white" font-size="18" font-weight="bold">EKF</text>
+            <text x="340" y="145" text-anchor="middle" fill="white" font-size="13">Sensor Fusion</text>
+            <text x="340" y="165" text-anchor="middle" fill="white" font-size="12">Optimal Estimate</text>
+
+            <!-- Arrows in -->
+            <line x1="170" y1="85" x2="235" y2="115" stroke="#e53935" stroke-width="3" marker-end="url(#ah)"/>
+            <line x1="170" y1="180" x2="235" y2="150" stroke="#1e88e5" stroke-width="3" marker-end="url(#ah)"/>
+            <line x1="510" y1="85" x2="445" y2="115" stroke="#43a047" stroke-width="3" marker-end="url(#ah)"/>
+
+            <!-- Output arrow -->
+            <line x1="585" y1="145" x2="585" y2="200" stroke="#764ba2" stroke-width="3" marker-end="url(#ah)"/>
+            <rect x="500" y="200" width="170" height="35" fill="#764ba2" rx="8"/>
+            <text x="585" y="222" text-anchor="middle" fill="white" font-size="13" font-weight="bold">Fused Pose (x,y,&theta;)</text>
+
+            <defs>
+                <marker id="ah" markerWidth="10" markerHeight="10" refX="8" refY="5" orient="auto">
+                    <polygon points="0 0, 10 5, 0 10" fill="#764ba2"/>
+                </marker>
+            </defs>
+        </svg>
+        <p class="image-caption">The EKF fuses fast but drifting IMU data, moderate encoder odometry, and slow but absolute GPS into an optimal estimate</p>
+    </div>
+
+    <div class="tip">
+        The key insight: high-frequency sensors (IMU) provide smooth short-term estimates, while low-frequency sensors (GPS) correct long-term drift. The EKF combines both optimally.
+    </div>
+</div>
+
+<!-- ============================================================ -->
+<!-- PAGE 3: KALMAN FILTER FUNDAMENTALS -->
+<!-- ============================================================ -->
+<div class="page">
+    <h3>Kalman Filter Fundamentals</h3>
+
+    <div class="image-container">
+        <img src="https://images.unsplash.com/photo-1509228468518-180dd4864904?w=800" alt="Navigation and Estimation">
+        <p class="image-caption">Rudolf Kalman published his filter in 1960 &mdash; it was used in the Apollo Moon missions for navigation</p>
+    </div>
+
+    <div class="info-box">
+        <h4>What is the Kalman Filter?</h4>
+        <p>An <strong>optimal recursive estimator</strong> that combines predictions from a mathematical model with noisy sensor measurements to produce the best estimate of a system's state. It is optimal in the sense of minimising the mean squared estimation error for <em>linear Gaussian</em> systems.</p>
+    </div>
+
+    <h4>The Two-Step Cycle:</h4>
+
+    <div class="image-container">
+        <svg width="650" height="300" viewBox="0 0 650 300" style="max-width: 100%;">
+            <!-- Predict Box -->
+            <rect x="30" y="50" width="250" height="200" fill="#e8f4f8" stroke="#667eea" stroke-width="3" rx="15"/>
+            <text x="155" y="85" text-anchor="middle" font-size="20" font-weight="bold" fill="#667eea">PREDICT</text>
+            <text x="155" y="115" text-anchor="middle" font-size="13" fill="#333">Use motion model to</text>
+            <text x="155" y="135" text-anchor="middle" font-size="13" fill="#333">propagate state forward</text>
+            <line x1="50" y1="150" x2="260" y2="150" stroke="#667eea" stroke-width="1" stroke-dasharray="4"/>
+            <text x="155" y="175" text-anchor="middle" font-size="13" fill="#667eea" font-weight="bold">x&#x0302; = F &middot; x + B &middot; u</text>
+            <text x="155" y="200" text-anchor="middle" font-size="13" fill="#667eea" font-weight="bold">P&#x0302; = F &middot; P &middot; F<tspan baseline-shift="super" font-size="10">T</tspan> + Q</text>
+            <text x="155" y="230" text-anchor="middle" font-size="11" fill="#666">(Uncertainty grows)</text>
+
+            <!-- Arrow -->
+            <path d="M 280 150 C 320 80, 350 80, 370 150" stroke="#764ba2" stroke-width="3" fill="none" marker-end="url(#ah2)"/>
+            <text x="330" y="70" text-anchor="middle" font-size="12" fill="#764ba2">Time step</text>
+
+            <path d="M 370 180 C 350 250, 320 250, 280 180" stroke="#4CAF50" stroke-width="3" fill="none" marker-end="url(#ah3)"/>
+            <text x="330" y="270" text-anchor="middle" font-size="12" fill="#4CAF50">Measurement</text>
+
+            <!-- Update Box -->
+            <rect x="370" y="50" width="250" height="200" fill="#f0fff0" stroke="#4CAF50" stroke-width="3" rx="15"/>
+            <text x="495" y="85" text-anchor="middle" font-size="20" font-weight="bold" fill="#4CAF50">UPDATE</text>
+            <text x="495" y="115" text-anchor="middle" font-size="13" fill="#333">Correct prediction with</text>
+            <text x="495" y="135" text-anchor="middle" font-size="13" fill="#333">sensor measurement</text>
+            <line x1="390" y1="150" x2="600" y2="150" stroke="#4CAF50" stroke-width="1" stroke-dasharray="4"/>
+            <text x="495" y="175" text-anchor="middle" font-size="13" fill="#4CAF50" font-weight="bold">K = P&#x0302; &middot; H<tspan baseline-shift="super" font-size="10">T</tspan> &middot; S<tspan baseline-shift="super" font-size="10">-1</tspan></text>
+            <text x="495" y="200" text-anchor="middle" font-size="13" fill="#4CAF50" font-weight="bold">x = x&#x0302; + K &middot; (z - H &middot; x&#x0302;)</text>
+            <text x="495" y="230" text-anchor="middle" font-size="11" fill="#666">(Uncertainty shrinks)</text>
+
+            <defs>
+                <marker id="ah2" markerWidth="10" markerHeight="10" refX="8" refY="5" orient="auto">
+                    <polygon points="0 0, 10 5, 0 10" fill="#764ba2"/>
+                </marker>
+                <marker id="ah3" markerWidth="10" markerHeight="10" refX="8" refY="5" orient="auto">
+                    <polygon points="0 0, 10 5, 0 10" fill="#4CAF50"/>
+                </marker>
+            </defs>
+        </svg>
+        <p class="image-caption">The Kalman Filter alternates between prediction (grows uncertainty) and update (shrinks uncertainty)</p>
+    </div>
+
+    <h4>Key Variables:</h4>
+    <table>
+        <tr>
+            <th>Symbol</th>
+            <th>Name</th>
+            <th>Description</th>
+        </tr>
+        <tr>
+            <td><strong>x</strong></td>
+            <td>State vector</td>
+            <td>What we want to estimate (e.g., position, velocity, heading)</td>
+        </tr>
+        <tr>
+            <td><strong>P</strong></td>
+            <td>State covariance</td>
+            <td>Uncertainty of our estimate (large P = uncertain)</td>
+        </tr>
+        <tr>
+            <td><strong>F</strong></td>
+            <td>State transition matrix</td>
+            <td>How the state evolves over time (motion model)</td>
+        </tr>
+        <tr>
+            <td><strong>Q</strong></td>
+            <td>Process noise covariance</td>
+            <td>How much we distrust the model</td>
+        </tr>
+        <tr>
+            <td><strong>H</strong></td>
+            <td>Measurement matrix</td>
+            <td>Maps state to expected measurement</td>
+        </tr>
+        <tr>
+            <td><strong>R</strong></td>
+            <td>Measurement noise covariance</td>
+            <td>How much we distrust the sensor</td>
+        </tr>
+        <tr>
+            <td><strong>K</strong></td>
+            <td>Kalman gain</td>
+            <td>Weighting between prediction and measurement</td>
+        </tr>
+        <tr>
+            <td><strong>z</strong></td>
+            <td>Measurement</td>
+            <td>Actual sensor reading</td>
+        </tr>
+    </table>
+</div>
+
+<!-- ============================================================ -->
+<!-- PAGE 4: KF EQUATIONS -->
+<!-- ============================================================ -->
+<div class="page">
+    <h3>Kalman Filter Equations (Linear Case)</h3>
+
+    <div class="image-container">
+        <img src="https://images.unsplash.com/photo-1596495578065-6e0763fa1178?w=800" alt="Mathematical Equations">
+        <p class="image-caption">The elegance of the Kalman Filter lies in just five equations that recursively compute the optimal estimate</p>
+    </div>
+
+    <div class="info-box">
+        <h4>Prediction Step (Time Update)</h4>
+        <p>Propagate the state and uncertainty forward using the motion model:</p>
+        <div class="math">
+            <strong>State prediction:</strong> \[ \hat{x}_{k|k-1} = F_k \cdot x_{k-1|k-1} + B_k \cdot u_k \]
+        </div>
+        <div class="math">
+            <strong>Covariance prediction:</strong> \[ P_{k|k-1} = F_k \cdot P_{k-1|k-1} \cdot F_k^T + Q_k \]
+        </div>
+    </div>
+
+    <div class="info-box">
+        <h4>Update Step (Measurement Update)</h4>
+        <p>Correct the prediction using the sensor measurement:</p>
+        <div class="math">
+            <strong>Innovation:</strong> \[ y_k = z_k - H_k \cdot \hat{x}_{k|k-1} \]
+        </div>
+        <div class="math">
+            <strong>Innovation covariance:</strong> \[ S_k = H_k \cdot P_{k|k-1} \cdot H_k^T + R_k \]
+        </div>
+        <div class="math">
+            <strong>Kalman gain:</strong> \[ K_k = P_{k|k-1} \cdot H_k^T \cdot S_k^{-1} \]
+        </div>
+        <div class="math">
+            <strong>State update:</strong> \[ x_{k|k} = \hat{x}_{k|k-1} + K_k \cdot y_k \]
+        </div>
+        <div class="math">
+            <strong>Covariance update:</strong> \[ P_{k|k} = (I - K_k \cdot H_k) \cdot P_{k|k-1} \]
+        </div>
+    </div>
+
+    <div class="activity-box">
+        <h3>Activity 1: Kalman Gain Intuition (10 minutes)</h3>
+        <p><strong>Question:</strong> What happens to the Kalman gain K in these scenarios? Think about what the filter should do, then verify with the equations.</p>
+        <ol>
+            <li><strong>R is very large</strong> (sensor is very noisy) &rarr; What happens to K? Does the filter trust prediction or measurement more?</li>
+            <li><strong>R is very small</strong> (sensor is very accurate) &rarr; What happens to K?</li>
+            <li><strong>P is very large</strong> (prediction is very uncertain) &rarr; What happens to K?</li>
+            <li><strong>After many updates</strong> (P has shrunk) &rarr; How does K change over time?</li>
+        </ol>
+        <p><strong>Discussion:</strong> The Kalman gain K automatically balances trust between the model prediction and sensor measurement based on their relative uncertainties.</p>
+    </div>
+
+    <div class="tip">
+        Think of the Kalman gain as a dial: \(K \approx 0\) means "trust the prediction", \(K \approx 1\) means "trust the measurement". The filter automatically sets this dial based on the relative uncertainties \(P\) and \(R\).
+    </div>
+</div>
+
+<!-- ============================================================ -->
+<!-- PAGE 5: EXTENDED KALMAN FILTER -->
+<!-- ============================================================ -->
+<div class="page">
+    <h2>Part 2: Extended Kalman Filter (50 minutes)</h2>
+
+    <h3>From Linear to Nonlinear</h3>
+
+    <div class="image-container">
+        <img src="https://images.unsplash.com/photo-1581092160562-40aa08e78837?w=800" alt="Mobile Robot">
+        <p class="image-caption">Real robot motion is nonlinear &mdash; a differential drive robot's position depends on \(\sin(\theta)\) and \(\cos(\theta)\)</p>
+    </div>
+
+    <div class="warning-box">
+        <h4>Why We Need EKF</h4>
+        <p>The standard Kalman Filter assumes <strong>linear</strong> state transition and measurement models. But real robot motion is <strong>nonlinear</strong>:</p>
+        <ul>
+            <li>Position update involves \(\sin(\theta)\) and \(\cos(\theta)\)</li>
+            <li>Range-bearing sensor models are nonlinear</li>
+            <li>GPS coordinate conversions are nonlinear</li>
+        </ul>
+        <p>The EKF <strong>linearises</strong> these nonlinear functions at the current estimate using Jacobian matrices.</p>
+    </div>
+
+    <h4>EKF vs Standard KF:</h4>
+    <div class="two-column">
+        <div class="info-box">
+            <h4>Standard Kalman Filter</h4>
+            <div class="math">\[ x_k = \mathbf{F} \cdot x_{k-1} + B \cdot u \]</div>
+            <div class="math">\[ z_k = \mathbf{H} \cdot x_k + \text{noise} \]</div>
+            <p>F and H are constant matrices (linear).</p>
+        </div>
+        <div class="info-box">
+            <h4>Extended Kalman Filter</h4>
+            <div class="math">\[ x_k = \mathbf{f}(x_{k-1}, u_k) + \text{noise} \]</div>
+            <div class="math">\[ z_k = \mathbf{h}(x_k) + \text{noise} \]</div>
+            <p>f() and h() are <strong>nonlinear functions</strong>. We linearise them by computing Jacobians F and H at the current state.</p>
+        </div>
+    </div>
+
+    <h3>The Jacobian Matrix</h3>
+
+    <div class="info-box">
+        <h4>What is a Jacobian?</h4>
+        <p>The Jacobian is a matrix of all first-order partial derivatives of a vector-valued function. It represents the <strong>local linear approximation</strong> of a nonlinear function around a point.</p>
+        <div class="math">
+            \[ F = \frac{\partial f}{\partial x} = \begin{bmatrix} \frac{\partial f_1}{\partial x_1} & \frac{\partial f_1}{\partial x_2} & \cdots \\ \frac{\partial f_2}{\partial x_1} & \frac{\partial f_2}{\partial x_2} & \cdots \\ \vdots & \vdots & \ddots \end{bmatrix} \]
+        </div>
+    </div>
+
+    <div class="image-container">
+        <svg width="650" height="200" viewBox="0 0 650 200" style="max-width: 100%;">
+            <text x="325" y="25" text-anchor="middle" font-size="16" font-weight="bold" fill="#667eea">Linearisation: Tangent Line at Operating Point</text>
+
+            <!-- Nonlinear curve -->
+            <path d="M 50 170 Q 150 40, 300 100 T 600 50" stroke="#667eea" stroke-width="3" fill="none"/>
+            <text x="600" y="40" font-size="12" fill="#667eea">f(x) nonlinear</text>
+
+            <!-- Operating point -->
+            <circle cx="300" cy="100" r="7" fill="#c62828"/>
+            <text x="310" y="90" font-size="12" fill="#c62828" font-weight="bold">Operating point x&#x0302;</text>
+
+            <!-- Tangent line -->
+            <line x1="180" y1="140" x2="420" y2="60" stroke="#4CAF50" stroke-width="2" stroke-dasharray="8"/>
+            <text x="430" y="55" font-size="12" fill="#4CAF50">Jacobian (tangent)</text>
+
+            <!-- Axes -->
+            <line x1="30" y1="180" x2="620" y2="180" stroke="#999" stroke-width="1"/>
+            <line x1="30" y1="180" x2="30" y2="20" stroke="#999" stroke-width="1"/>
+            <text x="620" y="195" font-size="12" fill="#999">x</text>
+            <text x="15" y="25" font-size="12" fill="#999">f(x)</text>
+        </svg>
+        <p class="image-caption">The Jacobian provides a linear approximation (green dashed line) of the nonlinear function (blue curve) at the current estimate</p>
+    </div>
+</div>
+
+<!-- ============================================================ -->
+<!-- PAGE 6: DIFFERENTIAL DRIVE MODEL & JACOBIAN -->
+<!-- ============================================================ -->
+<div class="page">
+    <h3>Differential Drive Robot Model</h3>
+
+    <div class="image-container">
+        <img src="https://images.unsplash.com/photo-1485827404703-89b55fcc595e?w=800" alt="Differential Drive Robot">
+        <p class="image-caption">Differential drive robots are the most common mobile platform &mdash; used by Amazon, iRobot, and warehouse AGVs</p>
+    </div>
+
+    <div class="info-box">
+        <h4>State Vector</h4>
+        <div class="math">\[ \mathbf{x} = \begin{bmatrix} p_x & p_y & \theta & v_x & v_y & \omega \end{bmatrix}^T \]</div>
+        <ul>
+            <li>\(p_x, p_y\) &ndash; Position in world frame (metres)</li>
+            <li>\(\theta\) &ndash; Heading angle (radians)</li>
+            <li>\(v_x, v_y\) &ndash; Linear velocity (m/s)</li>
+            <li>\(\omega\) &ndash; Angular velocity (rad/s)</li>
+        </ul>
+    </div>
+
+    <h4>Nonlinear Motion Model f(x, u):</h4>
+    <div class="info-box">
+        <div class="math">
+            \[ \begin{aligned} p_{x,k} &= p_{x,k-1} + v_{x,k-1} \cdot \cos(\theta_{k-1}) \cdot \Delta t \\ p_{y,k} &= p_{y,k-1} + v_{x,k-1} \cdot \sin(\theta_{k-1}) \cdot \Delta t \\ \theta_k &= \theta_{k-1} + \omega_{k-1} \cdot \Delta t \\ v_{x,k} &= v_{x,k-1} + a_x \cdot \Delta t \\ v_{y,k} &= v_{y,k-1} + a_y \cdot \Delta t \\ \omega_k &= \omega_{k-1} + \alpha \cdot \Delta t \end{aligned} \]
+        </div>
+        <p>Note the <strong>nonlinearity</strong>: \(\cos(\theta)\) and \(\sin(\theta)\) terms couple position and heading.</p>
+    </div>
+
+    <h4>Jacobian \( F = \frac{\partial f}{\partial x} \) (Motion Model):</h4>
+    <div class="math">
+        \[ F = \begin{bmatrix} 1 & 0 & -v_x \sin(\theta) \Delta t & \cos(\theta) \Delta t & 0 & 0 \\ 0 & 1 & v_x \cos(\theta) \Delta t & \sin(\theta) \Delta t & 0 & 0 \\ 0 & 0 & 1 & 0 & 0 & \Delta t \\ 0 & 0 & 0 & 1 & 0 & 0 \\ 0 & 0 & 0 & 0 & 1 & 0 \\ 0 & 0 & 0 & 0 & 0 & 1 \end{bmatrix} \]
+    </div>
+
+    <div class="activity-box">
+        <h3>Activity 2: Jacobian Derivation (15 minutes)</h3>
+        <p><strong>Task:</strong> Derive the Jacobian row-by-row:</p>
+        <ol>
+            <li>Write out \(\partial f_1 / \partial x_i\) for the first row (\(p_x\) equation) &mdash; which variables appear?</li>
+            <li>Write out \(\partial f_2 / \partial x_i\) for the second row (\(p_y\) equation)</li>
+            <li>Verify: why is \(F_{0,2} = -v_x \cdot \sin(\theta) \cdot \Delta t\)?</li>
+            <li>What happens to \(F\) when \(\theta = 0\)? (robot facing along x-axis)</li>
+        </ol>
+    </div>
+</div>
+
+<!-- ============================================================ -->
+<!-- PAGE 7: MEASUREMENT MODELS -->
+<!-- ============================================================ -->
+<div class="page">
+    <h3>Measurement Models</h3>
+
+    <div class="image-container">
+        <img src="https://images.unsplash.com/photo-1581092335397-9583eb92d232?w=800" alt="Sensors measuring robot">
+        <p class="image-caption">Each sensor provides a different view of the robot's state &mdash; the measurement model maps state to expected readings</p>
+    </div>
+
+    <h4>Sensor 1: Wheel Encoders (50 Hz)</h4>
+    <div class="info-box">
+        <p><strong>Measures:</strong> Linear velocity \(v\) and angular velocity \(\omega\)</p>
+        <div class="math">
+            \[ z_{\text{encoder}} = \begin{bmatrix} v \\ \omega \end{bmatrix}, \qquad h_{\text{encoder}}(\mathbf{x}) = \begin{bmatrix} \sqrt{v_x^2 + v_y^2} \\ \omega \end{bmatrix} \]
+        </div>
+        <p><strong>Jacobian \(H_{\text{encoder}}\):</strong></p>
+        <div class="math">
+            \[ H = \begin{bmatrix} 0 & 0 & 0 & \frac{v_x}{v} & \frac{v_y}{v} & 0 \\ 0 & 0 & 0 & 0 & 0 & 1 \end{bmatrix} \]
+        </div>
+        <p>where \( v = \sqrt{v_x^2 + v_y^2} \)</p>
+    </div>
+
+    <h4>Sensor 2: GPS (1 Hz)</h4>
+    <div class="info-box">
+        <p><strong>Measures:</strong> Global position \(p_x\), \(p_y\)</p>
+        <div class="math">
+            \[ z_{\text{GPS}} = \begin{bmatrix} p_x \\ p_y \end{bmatrix}, \qquad h_{\text{GPS}}(\mathbf{x}) = \begin{bmatrix} p_x \\ p_y \end{bmatrix} \]
+        </div>
+        <p><strong>Jacobian \(H_{\text{GPS}}\)</strong> (linear &mdash; simple selection matrix):</p>
+        <div class="math">
+            \[ H = \begin{bmatrix} 1 & 0 & 0 & 0 & 0 & 0 \\ 0 & 1 & 0 & 0 & 0 & 0 \end{bmatrix} \]
+        </div>
+    </div>
+
+    <h4>Sensor 3: IMU (100 Hz)</h4>
+    <div class="info-box">
+        <p><strong>Measures:</strong> Linear acceleration \(a_x\), \(a_y\) and angular velocity \(\omega\)</p>
+        <p>The IMU is typically used in the <strong>prediction step</strong> as a control input u rather than as a measurement update, since it directly drives the motion model.</p>
+        <div class="math">
+            \[ u_{\text{IMU}} = \begin{bmatrix} a_x & a_y & \alpha \end{bmatrix}^T \]
+        </div>
+    </div>
+
+    <div class="tip">
+        A common interview question: "Why is IMU used for prediction and GPS for update?" Because IMU provides acceleration (drives state change) at high rate, while GPS provides absolute position (corrects drift) at low rate.
+    </div>
+</div>
+
+<!-- ============================================================ -->
+<!-- PAGE 8: BREAK -->
+<!-- ============================================================ -->
+<div class="page">
+    <div style="display: flex; align-items: center; justify-content: center; min-height: 80vh; text-align: center;">
+        <div>
+            <h1 style="font-size: 3em; color: #667eea; margin-bottom: 30px;">Break Time</h1>
+            <div class="image-container">
+                <img src="https://images.unsplash.com/photo-1495474472287-4d71bcdd2085?w=600" alt="Coffee Break" style="max-width: 500px;">
+                <p class="image-caption">Take a 15-minute break. Stretch, hydrate, and refresh!</p>
+            </div>
+            <h2 style="color: #764ba2; margin-top: 40px;">We'll resume with Multi-Sensor Fusion &amp; Covariance Tuning</h2>
+            <p style="font-size: 1.5em; margin-top: 20px; color: #666;">Back in 15 minutes</p>
+        </div>
+    </div>
+</div>
+
+<!-- ============================================================ -->
+<!-- PAGE 9: ASYNCHRONOUS SENSOR FUSION -->
+<!-- ============================================================ -->
+<div class="page">
+    <h2>Part 3: Multi-Sensor Fusion &amp; Covariance Tuning (50 minutes)</h2>
+
+    <h3>Asynchronous Sensor Fusion</h3>
+
+    <div class="image-container">
+        <img src="https://images.unsplash.com/photo-1563802560976-b42092a4f21e?w=800" alt="Timing Diagram">
+        <p class="image-caption">In real systems, sensors arrive at different rates &mdash; the EKF must handle asynchronous updates gracefully</p>
+    </div>
+
+    <p>Real sensors run at different frequencies. The EKF must handle this naturally:</p>
+
+    <div class="image-container">
+        <svg width="650" height="220" viewBox="0 0 650 220" style="max-width: 100%;">
+            <text x="325" y="25" text-anchor="middle" font-size="16" font-weight="bold" fill="#667eea">Sensor Timeline (1 second shown)</text>
+
+            <!-- Time axis -->
+            <line x1="50" y1="180" x2="630" y2="180" stroke="#333" stroke-width="2"/>
+            <text x="340" y="210" text-anchor="middle" font-size="12" fill="#666">Time (seconds) &rarr;</text>
+
+            <!-- Time labels -->
+            <text x="50" y="195" text-anchor="middle" font-size="10" fill="#666">0.0</text>
+            <text x="108" y="195" text-anchor="middle" font-size="10" fill="#666">0.1</text>
+            <text x="166" y="195" text-anchor="middle" font-size="10" fill="#666">0.2</text>
+            <text x="224" y="195" text-anchor="middle" font-size="10" fill="#666">0.3</text>
+            <text x="282" y="195" text-anchor="middle" font-size="10" fill="#666">0.4</text>
+            <text x="340" y="195" text-anchor="middle" font-size="10" fill="#666">0.5</text>
+            <text x="398" y="195" text-anchor="middle" font-size="10" fill="#666">0.6</text>
+            <text x="456" y="195" text-anchor="middle" font-size="10" fill="#666">0.7</text>
+            <text x="514" y="195" text-anchor="middle" font-size="10" fill="#666">0.8</text>
+            <text x="572" y="195" text-anchor="middle" font-size="10" fill="#666">0.9</text>
+            <text x="630" y="195" text-anchor="middle" font-size="10" fill="#666">1.0</text>
+
+            <!-- IMU ticks (every ~5.8px = 10ms) -->
+            <text x="10" y="60" font-size="12" fill="#e53935" font-weight="bold">IMU 100Hz</text>
+            <!-- Show every other tick for clarity -->
+            <line x1="50" y1="50" x2="50" y2="65" stroke="#e53935" stroke-width="2"/>
+            <line x1="61.6" y1="50" x2="61.6" y2="65" stroke="#e53935" stroke-width="1"/>
+            <line x1="73.2" y1="50" x2="73.2" y2="65" stroke="#e53935" stroke-width="1"/>
+            <line x1="84.8" y1="50" x2="84.8" y2="65" stroke="#e53935" stroke-width="1"/>
+            <line x1="96.4" y1="50" x2="96.4" y2="65" stroke="#e53935" stroke-width="1"/>
+            <line x1="108" y1="50" x2="108" y2="65" stroke="#e53935" stroke-width="2"/>
+            <rect x="108" y="45" width="520" height="25" fill="url(#imuFill)" opacity="0.3"/>
+            <text x="400" y="62" text-anchor="middle" font-size="10" fill="#e53935">... continuous ticks every 10ms ...</text>
+
+            <!-- Encoder ticks (every ~11.6px = 20ms) -->
+            <text x="10" y="105" font-size="12" fill="#1e88e5" font-weight="bold">ENC 50Hz</text>
+            <circle cx="50" cy="100" r="5" fill="#1e88e5"/>
+            <circle cx="61.6" cy="100" r="0" fill="none"/>
+            <circle cx="108" cy="100" r="5" fill="#1e88e5"/>
+            <circle cx="166" cy="100" r="5" fill="#1e88e5"/>
+            <circle cx="224" cy="100" r="5" fill="#1e88e5"/>
+            <circle cx="282" cy="100" r="5" fill="#1e88e5"/>
+            <circle cx="340" cy="100" r="5" fill="#1e88e5"/>
+            <circle cx="398" cy="100" r="5" fill="#1e88e5"/>
+            <circle cx="456" cy="100" r="5" fill="#1e88e5"/>
+            <circle cx="514" cy="100" r="5" fill="#1e88e5"/>
+            <circle cx="572" cy="100" r="5" fill="#1e88e5"/>
+            <circle cx="630" cy="100" r="5" fill="#1e88e5"/>
+
+            <!-- GPS ticks (once per second) -->
+            <text x="10" y="150" font-size="12" fill="#43a047" font-weight="bold">GPS 1Hz</text>
+            <rect x="42" y="135" width="16" height="16" fill="#43a047" rx="3"/>
+            <rect x="622" y="135" width="16" height="16" fill="#43a047" rx="3"/>
+
+            <defs>
+                <linearGradient id="imuFill" x1="0%" y1="0%" x2="100%" y2="0%">
+                    <stop offset="0%" style="stop-color:#e53935;stop-opacity:0.3"/>
+                    <stop offset="100%" style="stop-color:#e53935;stop-opacity:0.1"/>
+                </linearGradient>
+            </defs>
+        </svg>
+        <p class="image-caption">IMU provides 100 updates per second, encoders 50, and GPS only 1 &mdash; the EKF handles all seamlessly</p>
+    </div>
+
+    <div class="info-box">
+        <h4>Fusion Strategy</h4>
+        <pre>
+At each timestep:
+  1. PREDICT using IMU data (100Hz)
+     x_pred = f(x, u_imu)
+     P_pred = F * P * F^T + Q
+
+  2. If encoder data available (50Hz):
+     UPDATE with encoder measurement
+     K = P_pred * H_enc^T * inv(S)
+     x = x_pred + K * (z_enc - h_enc(x_pred))
+
+  3. If GPS data available (1Hz):
+     UPDATE with GPS measurement
+     K = P * H_gps^T * inv(S)
+     x = x + K * (z_gps - h_gps(x))
+        </pre>
+    </div>
+
+    <div class="tip">
+        Multiple update steps can be applied sequentially within a single prediction cycle. The order does not matter for the final result (mathematically equivalent).
+    </div>
+</div>
+
+<!-- ============================================================ -->
+<!-- PAGE 10: COVARIANCE TUNING -->
+<!-- ============================================================ -->
+<div class="page">
+    <h3>Covariance Tuning: Q and R</h3>
+
+    <div class="image-container">
+        <img src="https://images.unsplash.com/photo-1551288049-bebda4e38f71?w=800" alt="Parameter Tuning">
+        <p class="image-caption">Proper tuning of noise covariance matrices is critical for filter performance &mdash; it's as much art as science</p>
+    </div>
+
+    <p>The two most important parameters to tune are the <strong>process noise Q</strong> and <strong>measurement noise R</strong>.</p>
+
+    <h4>Process Noise Q (Model Uncertainty)</h4>
+    <div class="two-column">
+        <div class="warning-box">
+            <h4>Q Too Small</h4>
+            <ul>
+                <li>Filter trusts model too much</li>
+                <li>Slow to respond to real changes</li>
+                <li>Can diverge if model is wrong</li>
+                <li><strong>Symptom:</strong> Estimate lags behind</li>
+            </ul>
+        </div>
+        <div class="warning-box">
+            <h4>Q Too Large</h4>
+            <ul>
+                <li>Filter distrusts model</li>
+                <li>Estimate becomes noisy</li>
+                <li>Follows sensor noise closely</li>
+                <li><strong>Symptom:</strong> Jittery trajectory</li>
+            </ul>
+        </div>
+    </div>
+
+    <h4>Measurement Noise R (Sensor Uncertainty)</h4>
+    <div class="two-column">
+        <div class="warning-box">
+            <h4>R Too Small</h4>
+            <ul>
+                <li>Filter trusts sensor too much</li>
+                <li>Estimate jumps with each reading</li>
+                <li>Sensitive to outliers</li>
+                <li><strong>Symptom:</strong> Noisy trajectory</li>
+            </ul>
+        </div>
+        <div class="warning-box">
+            <h4>R Too Large</h4>
+            <ul>
+                <li>Filter ignores sensor data</li>
+                <li>Relies entirely on model</li>
+                <li>Accumulates drift</li>
+                <li><strong>Symptom:</strong> Smooth but inaccurate</li>
+            </ul>
+        </div>
+    </div>
+
+    <div class="image-container">
+        <svg width="650" height="250" viewBox="0 0 650 250" style="max-width: 100%;">
+            <text x="325" y="25" text-anchor="middle" font-size="16" font-weight="bold" fill="#667eea">Effect of Q/R Tuning on Estimate Quality</text>
+
+            <!-- Q/R spectrum -->
+            <defs>
+                <linearGradient id="qrGrad" x1="0%" y1="0%" x2="100%" y2="0%">
+                    <stop offset="0%" style="stop-color:#c62828"/>
+                    <stop offset="50%" style="stop-color:#4CAF50"/>
+                    <stop offset="100%" style="stop-color:#c62828"/>
+                </linearGradient>
+            </defs>
+            <rect x="75" y="50" width="500" height="40" fill="url(#qrGrad)" rx="5"/>
+
+            <text x="75" y="115" text-anchor="start" font-size="13" fill="#c62828" font-weight="bold">Q/R &rarr; 0</text>
+            <text x="75" y="135" text-anchor="start" font-size="11" fill="#666">Trust model only</text>
+            <text x="75" y="150" text-anchor="start" font-size="11" fill="#666">Smooth but drifts</text>
+
+            <text x="325" y="115" text-anchor="middle" font-size="13" fill="#4CAF50" font-weight="bold">Optimal Balance</text>
+            <text x="325" y="135" text-anchor="middle" font-size="11" fill="#666">Best RMSE</text>
+            <text x="325" y="150" text-anchor="middle" font-size="11" fill="#666">Smooth &amp; accurate</text>
+
+            <text x="575" y="115" text-anchor="end" font-size="13" fill="#c62828" font-weight="bold">Q/R &rarr; &infin;</text>
+            <text x="575" y="135" text-anchor="end" font-size="11" fill="#666">Trust sensor only</text>
+            <text x="575" y="150" text-anchor="end" font-size="11" fill="#666">Noisy, follows sensor</text>
+
+            <!-- Error curve -->
+            <text x="325" y="185" text-anchor="middle" font-size="13" fill="#764ba2" font-weight="bold">Estimation Error (RMSE)</text>
+            <path d="M 100 195 Q 200 240, 325 200 Q 450 240, 550 195" stroke="#764ba2" stroke-width="3" fill="none"/>
+            <circle cx="325" cy="200" r="5" fill="#4CAF50"/>
+            <text x="335" y="220" font-size="11" fill="#4CAF50">minimum</text>
+        </svg>
+        <p class="image-caption">There is an optimal Q/R ratio that minimises estimation error &mdash; found by tuning</p>
+    </div>
+
+    <div class="example-box">
+        <h4>Practical Tuning Strategy:</h4>
+        <ol>
+            <li><strong>Start with sensor datasheets</strong> for \(R\) values (e.g., GPS accuracy &plusmn;2m &rarr; \(R_{\text{gps}} = \text{diag}(4, 4)\))</li>
+            <li><strong>Start with small \(Q\)</strong> and increase until the filter responds adequately</li>
+            <li><strong>Plot innovation sequence</strong> (\(y_k = z - h(\hat{x})\)) &mdash; should be zero-mean white noise</li>
+            <li><strong>Check NIS</strong> (Normalised Innovation Squared) &mdash; should follow \(\chi^2\) distribution</li>
+        </ol>
+    </div>
+</div>
+
+<!-- ============================================================ -->
+<!-- PAGE 11: SENSOR DROPOUT & OBSERVABILITY -->
+<!-- ============================================================ -->
+<div class="page">
+    <h3>Handling Sensor Dropout</h3>
+
+    <div class="image-container">
+        <img src="https://images.unsplash.com/photo-1550751827-4bd374c3f58b?w=800" alt="Signal Loss">
+        <p class="image-caption">GPS signals can be lost in tunnels, urban canyons, or indoors &mdash; the filter must continue operating</p>
+    </div>
+
+    <div class="info-box">
+        <h4>What Happens When a Sensor Drops Out?</h4>
+        <p>The EKF naturally handles dropout: simply <strong>skip the update step</strong> for that sensor. The filter continues with prediction only, using available sensors.</p>
+        <ul>
+            <li><strong>GPS dropout:</strong> Continue with IMU prediction + encoder updates. Uncertainty (P) grows gradually for position states.</li>
+            <li><strong>Encoder dropout:</strong> Continue with IMU prediction + GPS updates. Velocity estimate degrades.</li>
+            <li><strong>All sensors lost:</strong> Run prediction only (dead reckoning). Uncertainty grows rapidly.</li>
+        </ul>
+    </div>
+
+    <div class="image-container">
+        <svg width="650" height="200" viewBox="0 0 650 200" style="max-width: 100%;">
+            <text x="325" y="25" text-anchor="middle" font-size="16" font-weight="bold" fill="#667eea">Position Uncertainty During GPS Dropout</text>
+
+            <!-- Normal operation -->
+            <rect x="50" y="50" width="200" height="30" fill="#4CAF50" rx="5"/>
+            <text x="150" y="70" text-anchor="middle" fill="white" font-size="12">GPS Available</text>
+
+            <!-- Dropout -->
+            <rect x="250" y="50" width="200" height="30" fill="#c62828" rx="5"/>
+            <text x="350" y="70" text-anchor="middle" fill="white" font-size="12">GPS Dropout</text>
+
+            <!-- Recovery -->
+            <rect x="450" y="50" width="150" height="30" fill="#4CAF50" rx="5"/>
+            <text x="525" y="70" text-anchor="middle" fill="white" font-size="12">GPS Returns</text>
+
+            <!-- Uncertainty envelope -->
+            <path d="M 50 140 L 250 140 Q 350 100, 450 80" stroke="#667eea" stroke-width="2" fill="none"/>
+            <path d="M 50 140 L 250 140 Q 350 180, 450 200" stroke="#667eea" stroke-width="2" fill="none"/>
+            <!-- Recovery -->
+            <path d="M 450 80 Q 470 130, 500 140 L 600 140" stroke="#4CAF50" stroke-width="2" fill="none"/>
+            <path d="M 450 200 Q 470 150, 500 140 L 600 140" stroke="#4CAF50" stroke-width="2" fill="none"/>
+
+            <!-- Fill -->
+            <path d="M 250 140 Q 350 100, 450 80 Q 470 130, 500 140 Q 470 150, 450 200 Q 350 180, 250 140" fill="rgba(102,126,234,0.15)"/>
+
+            <text x="350" y="150" text-anchor="middle" font-size="11" fill="#667eea">Uncertainty grows</text>
+            <text x="530" y="155" text-anchor="middle" font-size="11" fill="#4CAF50">Snaps back</text>
+        </svg>
+        <p class="image-caption">During GPS dropout, position uncertainty grows; when GPS returns, the Kalman gain increases to quickly re-converge</p>
+    </div>
+
+    <h3>Observability Analysis</h3>
+    <div class="info-box">
+        <h4>Can we estimate all states from available sensors?</h4>
+        <p>A state is <strong>observable</strong> if it can be inferred from the available measurements. The <strong>observability matrix</strong>:</p>
+        <div class="math">\[ \mathcal{O} = \begin{bmatrix} H \\ H \cdot F \\ H \cdot F^2 \\ \vdots \\ H \cdot F^{n-1} \end{bmatrix} \]</div>
+        <p>The system is observable if \(\text{rank}(\mathcal{O}) = n\) (number of states).</p>
+        <ul>
+            <li><strong>GPS only:</strong> Position observable, velocity/heading NOT directly observable (but can infer from position changes)</li>
+            <li><strong>Encoders only:</strong> Velocity and angular rate observable, absolute position NOT observable (drift)</li>
+            <li><strong>GPS + Encoders + IMU:</strong> Full state observable</li>
+        </ul>
+    </div>
+
+    <div class="tip">
+        If you cannot observe a state, its covariance (uncertainty) will grow without bound. This is a common interview question: "What happens if GPS is unavailable?"
+    </div>
+</div>
+
+<!-- ============================================================ -->
+<!-- PAGE 12: EKF vs UKF -->
+<!-- ============================================================ -->
+<div class="page">
+    <h3>EKF vs UKF: When to Use Each</h3>
+
+    <div class="image-container">
+        <img src="https://images.unsplash.com/photo-1504639725590-34d0984388bd?w=800" alt="Algorithm Comparison">
+        <p class="image-caption">Choosing the right filter variant depends on the degree of nonlinearity and computational constraints</p>
+    </div>
+
+    <table>
+        <tr>
+            <th>Feature</th>
+            <th>EKF</th>
+            <th>UKF</th>
+        </tr>
+        <tr>
+            <td><strong>Linearisation</strong></td>
+            <td>First-order Taylor (Jacobian)</td>
+            <td>Sigma points (no Jacobian needed)</td>
+        </tr>
+        <tr>
+            <td><strong>Accuracy</strong></td>
+            <td>Good for mild nonlinearity</td>
+            <td>Better for strong nonlinearity</td>
+        </tr>
+        <tr>
+            <td><strong>Jacobian required?</strong></td>
+            <td>Yes (can be hard to derive)</td>
+            <td>No (advantage!)</td>
+        </tr>
+        <tr>
+            <td><strong>Computational cost</strong></td>
+            <td>Lower</td>
+            <td>~2&times; higher (2n+1 sigma points)</td>
+        </tr>
+        <tr>
+            <td><strong>Implementation</strong></td>
+            <td>Simpler once Jacobians derived</td>
+            <td>More code, but no calculus</td>
+        </tr>
+        <tr>
+            <td><strong>Industry use</strong></td>
+            <td>Most common (well understood)</td>
+            <td>Growing (autonomous drones)</td>
+        </tr>
+        <tr>
+            <td><strong>When to use</strong></td>
+            <td>Default choice for most systems</td>
+            <td>Highly nonlinear or complex Jacobians</td>
+        </tr>
+    </table>
+
+    <div class="image-container">
+        <svg width="650" height="260" viewBox="0 0 650 260" style="max-width: 100%;">
+            <text x="325" y="25" text-anchor="middle" font-size="16" font-weight="bold" fill="#667eea">EKF vs UKF: Approximation Strategy</text>
+
+            <!-- EKF side -->
+            <rect x="20" y="45" width="290" height="200" fill="#f8f8ff" stroke="#667eea" stroke-width="2" rx="8"/>
+            <text x="165" y="70" text-anchor="middle" font-size="14" font-weight="bold" fill="#667eea">EKF: Linearise Function</text>
+
+            <!-- Nonlinear curve -->
+            <path d="M 50 200 Q 120 100, 200 150 T 290 80" stroke="#667eea" stroke-width="2" fill="none"/>
+            <!-- Tangent -->
+            <circle cx="160" cy="140" r="5" fill="#c62828"/>
+            <line x1="100" y1="170" x2="220" y2="110" stroke="#c62828" stroke-width="2" stroke-dasharray="5"/>
+            <text x="165" y="230" text-anchor="middle" font-size="11" fill="#666">Tangent at operating point</text>
+
+            <!-- UKF side -->
+            <rect x="340" y="45" width="290" height="200" fill="#f0fff0" stroke="#4CAF50" stroke-width="2" rx="8"/>
+            <text x="485" y="70" text-anchor="middle" font-size="14" font-weight="bold" fill="#4CAF50">UKF: Sample Points</text>
+
+            <!-- Nonlinear curve -->
+            <path d="M 370 200 Q 440 100, 520 150 T 610 80" stroke="#4CAF50" stroke-width="2" fill="none"/>
+            <!-- Sigma points on input -->
+            <circle cx="440" cy="155" r="6" fill="#ff9800"/>
+            <circle cx="470" cy="140" r="6" fill="#ff9800"/>
+            <circle cx="500" cy="145" r="6" fill="#ff9800"/>
+            <circle cx="410" cy="175" r="6" fill="#ff9800"/>
+            <circle cx="530" cy="130" r="6" fill="#ff9800"/>
+            <text x="485" y="230" text-anchor="middle" font-size="11" fill="#666">Sigma points through function</text>
+        </svg>
+        <p class="image-caption">EKF approximates the function with a tangent line; UKF passes carefully chosen sample points through the actual nonlinear function</p>
+    </div>
+
+    <div class="activity-box">
+        <h3>Activity 3: Filter Selection (10 minutes)</h3>
+        <p><strong>Scenarios:</strong> Which filter would you choose and why?</p>
+        <ol>
+            <li>A warehouse robot driving on flat ground at low speed with wheel encoders and an overhead camera</li>
+            <li>A drone performing aggressive acrobatic manoeuvres with IMU + visual odometry</li>
+            <li>A self-driving car on a highway with LiDAR, cameras, GPS, and IMU</li>
+            <li>An underwater ROV with pressure sensor, DVL, and no GPS</li>
+        </ol>
+    </div>
+</div>
+
+<!-- ============================================================ -->
+<!-- PAGE 13: LAB OVERVIEW -->
+<!-- ============================================================ -->
+<div class="page">
+    <h2>Part 4: Hands-On Lab (75 minutes)</h2>
+
+    <h3>Lab: EKF Sensor Fusion Implementation</h3>
+
+    <div class="image-container">
+        <img src="https://images.unsplash.com/photo-1518432031352-d6fc5c10da5a?w=800" alt="Coding Lab">
+        <p class="image-caption">Implement a complete EKF from scratch to fuse IMU, wheel encoder, and GPS data</p>
+    </div>
+
+    <div class="info-box">
+        <h4>Lab Setup</h4>
+        <pre>
+cd ~/auto_ws/src/ros2_robotics_course/week_02/lab_exercises
+pip install numpy scipy matplotlib
+python3 generate_sensor_data.py   # generates synthetic sensor data
+        </pre>
+    </div>
+
+    <h3>Lab Tasks</h3>
+    <table>
+        <tr>
+            <th>Task</th>
+            <th>File</th>
+            <th>Description</th>
+            <th>Key Output</th>
+        </tr>
+        <tr>
+            <td><strong>1</strong></td>
+            <td>task1_prediction.py</td>
+            <td>EKF prediction step with IMU (100Hz)</td>
+            <td>Predicted trajectory (drifts over time)</td>
+        </tr>
+        <tr>
+            <td><strong>2</strong></td>
+            <td>task2_encoder_update.py</td>
+            <td>Update step for wheel encoders (50Hz)</td>
+            <td>Improved velocity estimate</td>
+        </tr>
+        <tr>
+            <td><strong>3</strong></td>
+            <td>task3_gps_update.py</td>
+            <td>Update step for GPS (1Hz)</td>
+            <td>Position drift corrected</td>
+        </tr>
+        <tr>
+            <td><strong>4</strong></td>
+            <td>task4_jacobians.py</td>
+            <td>Derive and implement all Jacobian matrices</td>
+            <td>Numerical verification passes</td>
+        </tr>
+        <tr>
+            <td><strong>5</strong></td>
+            <td>task5_covariance_tuning.py</td>
+            <td>Tune Q and R matrices</td>
+            <td>Optimal RMSE achieved</td>
+        </tr>
+        <tr>
+            <td><strong>6</strong></td>
+            <td>task6_full_ekf.py</td>
+            <td>Complete EKF with all sensors</td>
+            <td>Fused trajectory vs ground truth</td>
+        </tr>
+        <tr>
+            <td><strong>7</strong></td>
+            <td>task7_evaluation.py</td>
+            <td>RMSE calculation and sensor dropout test</td>
+            <td>Position RMSE &lt; 0.5m, heading RMSE &lt; 5&deg;</td>
+        </tr>
+    </table>
+
+    <div class="activity-box">
+        <h3>Lab Instructions</h3>
+        <ol>
+            <li>Generate synthetic data with <code>generate_sensor_data.py</code></li>
+            <li>Implement Tasks 1&ndash;4 to build the EKF components</li>
+            <li>Tune covariances in Task 5</li>
+            <li>Integrate everything in Task 6 and evaluate in Task 7</li>
+            <li>Plot: estimated trajectory, ground truth, raw sensor data, and uncertainty ellipses</li>
+        </ol>
+    </div>
+
+    <div class="tip">
+        Start with Task 1 (prediction only) and verify your motion model produces a reasonable trajectory before adding sensor updates. Debug incrementally!
+    </div>
+</div>
+
+<!-- ============================================================ -->
+<!-- PAGE 14: INTERVIEW PREPARATION -->
+<!-- ============================================================ -->
+<div class="page">
+    <h2>Interview Preparation</h2>
+
+    <div class="image-container">
+        <img src="https://images.unsplash.com/photo-1573497019940-1c28c88b4f3e?w=800" alt="Job Interview">
+        <p class="image-caption">EKF questions appear in almost every robotics interview &mdash; be prepared to derive and explain each step</p>
+    </div>
+
+    <div class="info-box">
+        <h4>Q1: Derive the Jacobian for a differential drive robot motion model.</h4>
+        <ul>
+            <li>Start from the nonlinear equations: \(p_x \mathrel{+}= v \cdot \cos(\theta) \cdot \Delta t\), \(p_y \mathrel{+}= v \cdot \sin(\theta) \cdot \Delta t\)</li>
+            <li>Take partial derivatives with respect to each state variable</li>
+            <li>The key nonzero off-diagonal entries are \(\partial p_x / \partial \theta\) and \(\partial p_y / \partial \theta\)</li>
+        </ul>
+    </div>
+
+    <div class="info-box">
+        <h4>Q2: What happens if your process noise Q is too small? Too large?</h4>
+        <ul>
+            <li><strong>Q too small:</strong> Filter becomes overconfident in model, ignores measurements, can diverge</li>
+            <li><strong>Q too large:</strong> Filter distrusts model, output becomes noisy, follows sensor noise</li>
+            <li><strong>Optimal:</strong> Balance that minimises estimation RMSE</li>
+        </ul>
+    </div>
+
+    <div class="info-box">
+        <h4>Q3: How do you handle sensor dropout in a Kalman filter?</h4>
+        <ul>
+            <li>Skip the update step for the dropped sensor</li>
+            <li>Continue prediction with remaining sensors</li>
+            <li>Covariance P grows for unobservable states</li>
+            <li>When sensor returns, Kalman gain is large &rarr; quick re-convergence</li>
+        </ul>
+    </div>
+
+    <div class="info-box">
+        <h4>Q4: Explain the difference between EKF and UKF. When use each?</h4>
+        <ul>
+            <li><strong>EKF:</strong> Linearises with Jacobians, works well for mild nonlinearity, computationally cheaper</li>
+            <li><strong>UKF:</strong> Uses sigma points (no Jacobians), better for strong nonlinearity, ~2x cost</li>
+            <li><strong>Rule of thumb:</strong> Use EKF unless Jacobian is very hard to derive or system is highly nonlinear</li>
+        </ul>
+    </div>
+
+    <div class="info-box">
+        <h4>Q5: Why is GPS update at 1Hz while IMU is at 100Hz? How handle this?</h4>
+        <ul>
+            <li>GPS: satellite signal processing is slow, but provides absolute position</li>
+            <li>IMU: MEMS accelerometer reads at kHz rates, provides relative motion</li>
+            <li>Solution: Predict at IMU rate (100Hz), update with GPS when available (1Hz)</li>
+            <li>Between GPS updates: IMU keeps state smooth; GPS corrects drift each second</li>
+        </ul>
+    </div>
+
+    <div class="activity-box">
+        <h3>Activity 4: Mock Interview (15 minutes)</h3>
+        <p><strong>Instructions:</strong> Pair up. One interviewer, one candidate. 3 minutes per question.</p>
+        <ol>
+            <li>Interviewer picks 2 questions from above</li>
+            <li>Candidate explains verbally &mdash; use the whiteboard to draw the predict/update cycle</li>
+            <li>Interviewer gives feedback: Was the explanation clear? Were the equations correct?</li>
+            <li>Switch roles</li>
+        </ol>
+    </div>
+</div>
+
+<!-- ============================================================ -->
+<!-- PAGE 15: REFERENCES -->
+<!-- ============================================================ -->
+<div class="page">
+    <h2>References &amp; Resources</h2>
+
+    <div class="image-container">
+        <img src="https://images.unsplash.com/photo-1507842217343-583bb7270b66?w=800" alt="Reference Books">
+        <p class="image-caption">Essential reading and resources for mastering sensor fusion and state estimation</p>
+    </div>
+
+    <h3>GitHub Repositories</h3>
+    <div class="info-box">
+        <ul>
+            <li><strong>AtsushiSakai/PythonRobotics</strong> &mdash; EKF localisation in Python (reference implementation)</li>
+            <li><strong>andrestoga/take_home_robotics_coding_test</strong> &mdash; Odometry coding challenge</li>
+            <li><strong>rlabbe/Kalman-and-Bayesian-Filters-in-Python</strong> &mdash; Excellent free textbook with Jupyter notebooks</li>
+        </ul>
+    </div>
+
+    <h3>Libraries &amp; Tools</h3>
+    <table>
+        <tr>
+            <th>Library</th>
+            <th>Install</th>
+            <th>Use Case</th>
+        </tr>
+        <tr>
+            <td><strong>NumPy</strong></td>
+            <td><code>pip install numpy</code></td>
+            <td>Matrix operations, linear algebra</td>
+        </tr>
+        <tr>
+            <td><strong>SciPy</strong></td>
+            <td><code>pip install scipy</code></td>
+            <td>Numerical integration, optimisation</td>
+        </tr>
+        <tr>
+            <td><strong>FilterPy</strong></td>
+            <td><code>pip install filterpy</code></td>
+            <td>KF, EKF, UKF implementations</td>
+        </tr>
+        <tr>
+            <td><strong>Matplotlib</strong></td>
+            <td><code>pip install matplotlib</code></td>
+            <td>Trajectory plotting, uncertainty ellipses</td>
+        </tr>
+    </table>
+
+    <h3>Key References</h3>
+    <div class="example-box">
+        <p><strong>[1]</strong> R. E. Kalman, "A New Approach to Linear Filtering and Prediction Problems," <em>Journal of Basic Engineering</em>, vol. 82, pp. 35&ndash;45, 1960.</p>
+        <p style="margin-top: 10px;"><strong>[2]</strong> S. Thrun, W. Burgard, and D. Fox, <em>Probabilistic Robotics</em>, MIT Press, 2005. (Chapters 3&ndash;4: Gaussian Filters)</p>
+        <p style="margin-top: 10px;"><strong>[3]</strong> R. Labbe, <em>Kalman and Bayesian Filters in Python</em>, GitHub, 2024. [Online]. Available: https://github.com/rlabbe/Kalman-and-Bayesian-Filters-in-Python</p>
+        <p style="margin-top: 10px;"><strong>[4]</strong> G. Welch and G. Bishop, "An Introduction to the Kalman Filter," University of North Carolina, TR 95-041, 2006.</p>
+    </div>
+
+    <h3>Lab Equipment</h3>
+    <div class="info-box">
+        <ul>
+            <li><strong>Astra Pro RGB-D Camera:</strong> For future visual odometry integration</li>
+            <li><strong>RPLiDAR S2:</strong> Can provide range measurements for update step</li>
+        </ul>
+    </div>
+
+    <h3>Submission Requirements</h3>
+    <div class="checklist">
+        <ul>
+            <li>All 7 task files completed and running</li>
+            <li>Trajectory plot: estimated vs ground truth vs raw sensors</li>
+            <li>RMSE report: position error &lt; 0.5m, heading error &lt; 5&deg;</li>
+            <li>Covariance tuning analysis: what values of Q, R work best and why</li>
+            <li>Sensor dropout test: system continues operating with GPS removed</li>
+            <li>Answers to 5 interview questions</li>
+        </ul>
+    </div>
+
+    <div class="footer">
+        <p><strong>Robotics &amp; Drone Engineering</strong></p>
+        <p>Open Robotics Course</p>
+        <p>Dr. Abdul Manan Khan | Week 2: Sensor Fusion with Extended Kalman Filter</p>
+    </div>
+</div>
+
+</body>
+</html>

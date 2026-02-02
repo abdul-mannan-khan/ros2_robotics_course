@@ -1,0 +1,45 @@
+Panels:
+  - Class: rviz_common/Displays
+    Name: Displays
+Visualization Manager:
+  Class: ""
+  Displays:
+    - Class: rviz_default_plugins/Grid
+      Name: Grid
+      Enabled: true
+      Cell Size: 5
+      Color: 160; 160; 164
+    - Class: rviz_default_plugins/Pose
+      Name: Ground Truth Pose
+      Enabled: true
+      Topic:
+        Value: /ground_truth_pose
+      Color: 0; 255; 0
+      Shape:
+        Value: Arrow
+    - Class: rviz_default_plugins/Pose
+      Name: Estimated Attitude
+      Enabled: true
+      Topic:
+        Value: /estimated_attitude
+      Color: 255; 165; 0
+      Shape:
+        Value: Arrow
+  Global Options:
+    Fixed Frame: map
+    Frame Rate: 30
+  Tools:
+    - Class: rviz_default_plugins/MoveCamera
+    - Class: rviz_default_plugins/FocusCamera
+  Value: true
+  Views:
+    Current:
+      Class: rviz_default_plugins/Orbit
+      Distance: 30
+      Pitch: 0.5
+      Yaw: 0
+Window Geometry:
+  Width: 1200
+  Height: 800
+  Displays:
+    collapsed: false
