@@ -79,7 +79,7 @@ pip install numpy opencv-python matplotlib scipy scikit-learn pandas
 mkdir -p ~/auto_ws/src && cd ~/auto_ws/src
 
 # Clone the course repository
-git clone https://github.com/YOUR_USERNAME/ros2_robotics_course.git
+git clone https://github.com/abdul-mannan-khan/ros2_robotics_course.git
 ```
 
 Replace `YOUR_USERNAME` with the actual GitHub username or organization.

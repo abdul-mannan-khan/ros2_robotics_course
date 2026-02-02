@@ -22,7 +22,7 @@ source /opt/ros/jazzy/setup.bash
 
 # Clone and build
 mkdir -p ~/auto_ws/src && cd ~/auto_ws/src
-git clone https://github.com/YOUR_USERNAME/ros2_robotics_course.git
+git clone https://github.com/abdul-mannan-khan/ros2_robotics_course.git
 cd ~/auto_ws
 colcon build --symlink-install
 source install/setup.bash
@@ -215,7 +215,7 @@ limitations under the License.
 ## Contact & Support
 
 **Course Author:** Dr. Abdul Manan Khan
-**Repository:** [https://github.com/YOUR_USERNAME/ros2_robotics_course](https://github.com/YOUR_USERNAME/ros2_robotics_course)
+**Repository:** [https://github.com/abdul-mannan-khan/ros2_robotics_course](https://github.com/abdul-mannan-khan/ros2_robotics_course)
 
 For questions, issues, or discussions:
 - Open an issue on GitHub
