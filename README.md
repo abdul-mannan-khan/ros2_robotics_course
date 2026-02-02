@@ -22,13 +22,13 @@ source /opt/ros/jazzy/setup.bash
 
 # Clone and build
 mkdir -p ~/auto_ws/src && cd ~/auto_ws/src
-git clone https://github.com/abdul-mannan-khan/robotics-from-zero-to-hired.git
+git clone https://github.com/abdul-mannan-khan/robotics-drone-interview-based-course.git
 cd ~/auto_ws
 colcon build --symlink-install
 source install/setup.bash
 
 # Run a demo (e.g., Week 1 LiDAR Processing)
-cd src/robotics-from-zero-to-hired/week_01/w01_exercises
+cd src/robotics-drone-interview-based-course/week_01/w01_exercises
 python3 generate_bag.py
 ros2 launch week_01_lidar_processing demo.launch.py
 ```
@@ -115,7 +115,7 @@ This course is designed with robotics industry interviews in mind. Each week's e
 ## Repository Structure
 
 ```
-robotics-from-zero-to-hired/
+robotics-drone-interview-based-course/
 ├── README.md                  # This file
 ├── INTERVIEW_PREP.md          # Detailed interview guide
 ├── SETUP.md                   # Installation and environment setup
@@ -215,7 +215,7 @@ limitations under the License.
 ## Contact & Support
 
 **Course Author:** Dr. Abdul Manan Khan
-**Repository:** [https://github.com/abdul-mannan-khan/robotics-from-zero-to-hired](https://github.com/abdul-mannan-khan/robotics-from-zero-to-hired)
+**Repository:** [https://github.com/abdul-mannan-khan/robotics-drone-interview-based-course](https://github.com/abdul-mannan-khan/robotics-drone-interview-based-course)
 
 For questions, issues, or discussions:
 - Open an issue on GitHub

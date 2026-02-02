@@ -79,7 +79,7 @@ pip install numpy opencv-python matplotlib scipy scikit-learn pandas
 mkdir -p ~/auto_ws/src && cd ~/auto_ws/src
 
 # Clone the course repository
-git clone https://github.com/abdul-mannan-khan/robotics-from-zero-to-hired.git
+git clone https://github.com/abdul-mannan-khan/robotics-drone-interview-based-course.git
 ```
 
 Replace `YOUR_USERNAME` with the actual GitHub username or organization.
@@ -92,9 +92,9 @@ The course uses a nested package structure. Create symlinks so colcon can discov
 cd ~/auto_ws
 
 # Create symlinks for each week
-for d in src/robotics-from-zero-to-hired/week_*/; do
+for d in src/robotics-drone-interview-based-course/week_*/; do
     week=$(basename "$d")
-    ln -sf "robotics-from-zero-to-hired/$week" "src/$week"
+    ln -sf "robotics-drone-interview-based-course/$week" "src/$week"
 done
 ```
 
@@ -134,7 +134,7 @@ Many exercises use ROS2 bag files with synthetic sensor data. Generate these bag
 
 ```bash
 # Generate bags for all weeks
-for d in ~/auto_ws/src/robotics-from-zero-to-hired/week_*/w*_exercises/; do
+for d in ~/auto_ws/src/robotics-drone-interview-based-course/week_*/w*_exercises/; do
     if [ -f "$d/generate_bag.py" ]; then
         echo "Generating bag for $(dirname $d)..."
         cd "$d" && python3 generate_bag.py && cd -
@@ -149,7 +149,7 @@ This will create bag files in each week's `bags/` directory. Generation may take
 If you need to regenerate data for a specific week:
 
 ```bash
-cd ~/auto_ws/src/robotics-from-zero-to-hired/week_01/w01_exercises
+cd ~/auto_ws/src/robotics-drone-interview-based-course/week_01/w01_exercises
 python3 generate_bag.py
 ```
 
@@ -184,7 +184,7 @@ To run a single exercise node without the full demo:
 ros2 run week_01_lidar_processing ex1_ground_removal
 
 # In another terminal, play the bag file
-ros2 bag play ~/auto_ws/src/robotics-from-zero-to-hired/week_01/w01_exercises/bags/lidar_data
+ros2 bag play ~/auto_ws/src/robotics-drone-interview-based-course/week_01/w01_exercises/bags/lidar_data
 ```
 
 ### Visualize in RViz2
@@ -192,7 +192,7 @@ ros2 bag play ~/auto_ws/src/robotics-from-zero-to-hired/week_01/w01_exercises/ba
 Launch RViz2 with a pre-configured layout:
 
 ```bash
-rviz2 -d ~/auto_ws/src/robotics-from-zero-to-hired/week_01/w01_exercises/config/rviz_config.rviz
+rviz2 -d ~/auto_ws/src/robotics-drone-interview-based-course/week_01/w01_exercises/config/rviz_config.rviz
 ```
 
 Or launch RViz2 separately and manually add displays:
@@ -239,13 +239,13 @@ cd ~/auto_ws
 ls -la src/ | grep week
 
 # You should see symlinks like:
-# week_01 -> robotics-from-zero-to-hired/week_01
-# week_02 -> robotics-from-zero-to-hired/week_02
+# week_01 -> robotics-drone-interview-based-course/week_01
+# week_02 -> robotics-drone-interview-based-course/week_02
 
 # If missing, recreate symlinks
-for d in src/robotics-from-zero-to-hired/week_*/; do
+for d in src/robotics-drone-interview-based-course/week_*/; do
     week=$(basename "$d")
-    ln -sf "robotics-from-zero-to-hired/$week" "src/$week"
+    ln -sf "robotics-drone-interview-based-course/$week" "src/$week"
 done
 
 # Rebuild
@@ -305,7 +305,7 @@ ros2 run tf2_ros tf2_echo base_link sensor_frame
 **Solution**: Make Python files executable:
 
 ```bash
-chmod +x ~/auto_ws/src/robotics-from-zero-to-hired/week_*/w*_exercises/scripts/*.py
+chmod +x ~/auto_ws/src/robotics-drone-interview-based-course/week_*/w*_exercises/scripts/*.py
 ```
 
 ### Build Errors After Pulling Updates
